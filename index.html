@@ -7,7 +7,7 @@
 <meta name="description" content="AIS Sales Manager — ежедневная система менеджера для роста оптовых продаж телефонов.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>AIS Sales Manager 5.0 — Рост продаж</title>
+<title>AIS Sales Manager 5.2 — Воронка продаж</title>
 <style>
 :root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--text:#f4f7fb;--muted:#9aabc3;--blue:#d8ff3e;--green:#9bdc28;--line:#263650;--amber:#ffbf5b}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111e,#111d31);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -172,7 +172,7 @@ nav .tab{letter-spacing:-.1px}
 .inventory-table-wrap{overflow-x:auto;margin-top:12px}.inventory-table{width:100%;border-collapse:collapse;min-width:650px;font-size:13px}.inventory-table th,.inventory-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}.inventory-table th{font-size:11px;color:var(--muted);text-transform:uppercase}.inventory-total{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.inventory-total .notice{flex:1;min-width:130px}.inventory-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.inventory-actions button{flex:1;min-width:130px}
 
 
-/* AIS Sales Manager 5.0 — single-purpose manager-first dashboard */
+/* AIS Sales Manager 5.2 — manager-first sales funnel and order tracking */
 #finance,#inventoryWorkspace,.sales-quick,.sales-note{display:none!important}
 .sales-dashboard{display:block}
 .dash-hero{background:linear-gradient(130deg,#171a15,#303a27);color:#fff;border-radius:22px;padding:25px 23px;margin-bottom:13px;box-shadow:0 8px 24px rgba(20,25,12,.12);border:1px solid #39432d}
@@ -296,6 +296,19 @@ if ('serviceWorker' in navigator) {
       <div class="inventory-actions"><button class="mini primary" id="exportInventoryExcel" type="button">Скачать Excel (.xlsx)</button><button class="mini" id="exportInventoryCsv" type="button">Экспорт в CSV</button></div>
       <div class="notice">Важно: данные сохраняются только в этом браузере. Перед обновлением приложения сделай резервную копию в меню приложения.</div>
     </div>
+    <div class="card" id="salesFunnel" style="margin-bottom:12px;border-top:4px solid #d9ff45"><div class="row"><div><h2>Воронка продаж</h2><p class="muted" style="margin:0">Смотри, где клиенты переходят к следующему этапу.</p></div><span class="pill">НЕДЕЛЯ</span></div>
+      <div class="grid" style="margin-top:12px">
+        <div class="card"><div class="muted">Контакты</div><div class="kpi" id="funnelContacts">0</div><div class="notice">Фактические касания</div></div>
+        <div class="card"><div class="muted">Предложения</div><div class="kpi" id="funnelOffers">0</div><div class="notice">Конверсия: <b id="funnelOfferRate">0%</b></div></div>
+        <div class="card"><div class="muted">Переговоры</div><div class="kpi" id="funnelNegotiations">0</div><div class="notice">От предложений: <b id="funnelNegotiationRate">0%</b></div></div>
+        <div class="card"><div class="muted">Заказы</div><div class="kpi" id="funnelOrders">0</div><div class="notice">От контактов: <b id="funnelOrderRate">0%</b></div></div>
+      </div>
+      <div class="progress"><div id="funnelProgress"></div></div><div class="notice" id="funnelInsight">Записывай фактические контакты и заказы, чтобы видеть конверсию.</div>
+    </div>
+    <div class="card" id="orderTracker" style="margin-bottom:12px;border-top:4px solid #6da8df"><h2>Учёт заказов</h2><p class="muted">Фиксируй подтверждённые заказы. Воронка учитывает только заказы, не помеченные отменёнными.</p>
+      <div class="formgrid"><div><label class="field">Клиент / магазин</label><input id="orderClient" placeholder="Название магазина"></div><div><label class="field">Количество телефонов</label><input id="orderUnits" type="number" min="1" step="1" value="1"></div><div><label class="field">Сумма заказа, $ (необязательно)</label><input id="orderAmount" type="number" min="0" step="0.01" placeholder="0"></div><div><label class="field">Статус заказа</label><select id="orderStatus"><option>Подтверждён</option><option>Отгружен</option><option>Ожидает оплаты</option><option>Отменён</option></select></div><div><label class="field">Дата заказа</label><input id="orderDate" type="date"></div></div>
+      <button class="primary" id="addOrder" type="button">Сохранить заказ</button><div class="inventory-table-wrap"><table class="inventory-table" style="min-width:620px"><thead><tr><th>Дата</th><th>Клиент</th><th>Телефоны</th><th>Сумма, $</th><th>Статус</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div><div id="ordersEmpty" class="empty">Пока нет записанных заказов.</div>
+    </div>
     <div class="card sales-kpi-form"><h2>KPI менеджера · текущая неделя</h2><p class="muted">Вводи фактические цифры. Цель — улучшать не только продажи, но и активность, повторные касания и конверсию.</p><div class="formgrid"><div><label class="field">Продано телефонов, шт.</label><input id="sUnits" type="number" min="0" value="75"></div><div><label class="field">Активные покупатели</label><input id="sActive" type="number" min="0" value="20"></div><div><label class="field">Валовая прибыль на телефон, $</label><input id="sMargin" type="number" min="0" step=".5" value="15"></div><div><label class="field">Новые / возвращённые клиенты</label><input id="sNew" type="number" min="0" value="3"></div><div><label class="field">Целевые контакты за неделю</label><input id="sContacts" type="number" min="0" value="180"></div><div><label class="field">Предложения отправлены</label><input id="sOffers" type="number" min="0" value="40"></div><div><label class="field">Повторные касания</label><input id="sFollowups" type="number" min="0" value="40"></div><div><label class="field">Заказы получены</label><input id="sOrders" type="number" min="0" value="15"></div></div><button class="primary" id="saveSales">Сохранить KPI</button></div>
     <div class="grid" style="margin-top:12px"><div class="card"><div class="muted">Контакты</div><div class="kpi" id="kContacts">180</div><div class="notice">Ориентир: 150–210 в неделю</div></div><div class="card"><div class="muted">Предложения</div><div class="kpi" id="kOffers">40</div><div class="notice">Ориентир: 30–50 в неделю</div></div><div class="card"><div class="muted">Заказы</div><div class="kpi" id="kOrders">15</div><div class="notice">Считай реальные заказы, не обещания</div></div><div class="card"><div class="muted">Новые / возвращённые</div><div class="kpi" id="kNew">3</div><div class="notice">Ориентир: 2–4 в неделю</div></div></div>
   </section>
@@ -305,7 +318,7 @@ if ('serviceWorker' in navigator) {
     <div class="two"><div class="card"><h2>Параметры</h2><label class="field">Продажи, телефонов в неделю</label><input id="fUnits" type="number" value="75" min="0"><label class="field">Себестоимость одного телефона, $</label><input id="fCost" type="number" value="400" min="0"><label class="field">Денежный цикл, дней</label><input id="fDays" type="number" value="14" min="0"><label class="field">Доступная отсрочка / предоплаты, $</label><input id="fCredit" type="number" value="0" min="0"><label class="field">Свободные оборотные деньги, $</label><input id="fCash" type="number" value="0" min="0"><button class="primary" id="calcFinance">Рассчитать</button></div>
     <div class="card"><h2>Результат</h2><div class="muted">Ориентировочная потребность в капитале</div><div class="kpi" id="capitalNeed">$60,000</div><div class="muted">Оценка дефицита средств</div><div class="kpi" id="capitalGap">$60,000</div><div class="notice">Формула: недельные продажи × себестоимость × дни денежного цикла ÷ 7. Затем вычитаются доступные отсрочки / предоплаты. Это приближение, не бухгалтерский баланс и не финансовая рекомендация.</div></div></div>
   </section>
-  <div class="footer">AIS Sales Manager 5.0 · Фокус на оптовых продажах · Данные хранятся в браузере на этом устройстве.</div>
+  <div class="footer">AIS Sales Manager 5.2 · Воронка продаж и учёт заказов · Данные хранятся в браузере на этом устройстве.</div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
@@ -317,12 +330,13 @@ const defaultTasks=[
  {title:"Проверить товар и отгрузки",note:"Сверить заявки с реальным наличием"},
  {title:"Подвести итоги и проверить деньги",note:"Продажи, прибыль, остатки, сумма на закупку"}
 ];
-const defaultState={tasks:defaultTasks.map(t=>({...t,done:false})),clients:[],sales:{units:75,active:20,margin:15,new:3,contacts:180,offers:40,followups:40,orders:15},finance:{units:75,cost:400,days:14,credit:0,cash:0},inventory:[]};
+const defaultState={tasks:defaultTasks.map(t=>({...t,done:false})),clients:[],orders:[],sales:{units:75,active:20,margin:15,new:3,contacts:180,offers:40,followups:40,orders:15},finance:{units:75,cost:400,days:14,credit:0,cash:0},inventory:[]};
 let state;
 try{state=JSON.parse(localStorage.getItem("aisStoreMVP")||"null")}catch(e){state=null}
 if(!state)state=structuredClone(defaultState);
 if(!Array.isArray(state.inventory))state.inventory=[];
-function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();renderInventory();renderUpcomingTask();}
+if(!Array.isArray(state.orders))state.orders=[];
+function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();renderInventory();renderOrders();renderFunnel();renderUpcomingTask();}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 const coachSteps=[
@@ -411,10 +425,33 @@ function zipStore(files){const enc=new TextEncoder(),local=[],central=[];let off
 function buildInventoryXlsx(items){const headers=['Модель / товар','IMEI / серийный номер','Состояние','Количество','Закупочная цена за 1 шт. (USD)','Общая стоимость (USD)','Примечание'];const rows=[headers,...items.map(it=>[it.model||'',it.imei||'',it.condition||'',Number(it.qty)||0,Number(it.cost)||0,(Number(it.qty)||0)*(Number(it.cost)||0),it.note||''])];const sheetRows=rows.map((row,ri)=>'<row r="'+(ri+1)+'">'+row.map((v,ci)=>{const ref=excelCol(ci+1)+(ri+1);if(typeof v==='number')return '<c r="'+ref+'" t="n"><v>'+v+'</v></c>';return '<c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+xlsxEscape(v)+'</t></is></c>'}).join('')+'</row>').join('');const sheet='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="1" width="28" customWidth="1"/><col min="2" max="2" width="24" customWidth="1"/><col min="3" max="3" width="16" customWidth="1"/><col min="4" max="4" width="13" customWidth="1"/><col min="5" max="6" width="25" customWidth="1"/><col min="7" max="7" width="35" customWidth="1"/></cols><sheetData>'+sheetRows+'</sheetData><autoFilter ref="A1:G'+rows.length+'"/></worksheet>';const workbook='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Склад AIS" sheetId="1" r:id="rId1"/></sheets></workbook>';const files=[{name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'},{name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},{name:'xl/workbook.xml',data:workbook},{name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>'},{name:'xl/worksheets/sheet1.xml',data:sheet}];return zipStore(files)}
 $('exportInventoryExcel').onclick=()=>{const items=state.inventory||[];if(!items.length&&!confirm('Склад пуст. Скачать Excel-файл только с заголовками?'))return;const bytes=buildInventoryXlsx(items);const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='AIS-Store-inventory.xlsx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)};
 $('exportInventoryCsv').onclick=()=>{const items=state.inventory||[];const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv='Модель,IMEI,Состояние,Количество,Цена за штуку USD,Сумма USD,Примечание\r\n'+items.map(it=>[it.model,it.imei,it.condition,it.qty,it.cost,(Number(it.qty)||0)*(Number(it.cost)||0),it.note].map(q).join(',')).join('\r\n');downloadFile('ais-inventory.csv','\ufeff'+csv,'text/csv;charset=utf-8')};
+function activeOrders(){return (state.orders||[]).filter(o=>o.status!=="Отменён")}
+function renderFunnel(){
+ const s=state.sales||{}, clients=state.clients||[], orders=activeOrders();
+ const contacts=Math.max(0,Number(s.contacts)||0), offers=Math.max(0,Number(s.offers)||0);
+ const negotiations=clients.filter(c=>["Переговоры","Заказ","Активный"].includes(c.status)).length;
+ const orderCount=orders.length;
+ const rate=(a,b)=>b?Math.round(a/b*100):0;
+ const set=(id,v)=>{if($(id))$(id).textContent=v};
+ set("funnelContacts",contacts);set("funnelOffers",offers);set("funnelNegotiations",negotiations);set("funnelOrders",orderCount);
+ set("funnelOfferRate",rate(offers,contacts)+"%");set("funnelNegotiationRate",rate(negotiations,offers)+"%");set("funnelOrderRate",rate(orderCount,contacts)+"%");
+ if($("funnelProgress"))$("funnelProgress").style.width=Math.min(100,rate(orderCount,contacts))+"%";
+ const units=orders.reduce((n,o)=>n+(Number(o.units)||0),0);
+ set("funnelInsight",orderCount?`Зафиксировано ${orderCount} заказ(ов) на ${units} телефонов. Конверсия контакта в заказ — ${rate(orderCount,contacts)}%. Сравнивай недели при одинаковом способе учёта.`:"Заказов пока нет. Сохраняй каждый реальный заказ внизу; отменённые заказы не учитываются в конверсии.");
+}
+function renderOrders(){
+ const rows=$("orderRows"), empty=$("ordersEmpty");if(!rows)return;
+ const orders=(state.orders||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+ rows.innerHTML=orders.map(o=>`<tr><td>${esc(o.date||"")}</td><td>${esc(o.client||"")}</td><td>${Number(o.units)||0}</td><td>${Number(o.amount||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td>${esc(o.status||"")}</td><td><button class="mini danger" data-del-order="${esc(o.id)}" type="button">Удалить</button></td></tr>`).join("");
+ empty.classList.toggle("hidden",orders.length>0);
+ document.querySelectorAll("[data-del-order]").forEach(b=>b.onclick=()=>{if(confirm("Удалить эту запись заказа?")){state.orders=state.orders.filter(o=>o.id!==b.dataset.delOrder);save()}});
+ renderFunnel();
+}
+$("addOrder").onclick=()=>{const client=$("orderClient").value.trim(),units=Math.floor(Number($("orderUnits").value)),amount=$("orderAmount").value.trim()===""?0:Number($("orderAmount").value);if(!client){alert("Укажи клиента или магазин.");return}if(!Number.isFinite(units)||units<1){alert("Количество телефонов должно быть не меньше 1.");return}if(!Number.isFinite(amount)||amount<0){alert("Проверь сумму заказа.");return}state.orders.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),client,units,amount,status:$("orderStatus").value,date:$("orderDate").value||new Date().toISOString().slice(0,10),createdAt:new Date().toISOString()});$("orderClient").value="";$("orderUnits").value="1";$("orderAmount").value="";save();alert("Заказ сохранён.")};
 function renderSales(){
  const s=state.sales;const map={sUnits:"units",sActive:"active",sMargin:"margin",sNew:"new",sContacts:"contacts",sOffers:"offers",sFollowups:"followups",sOrders:"orders"};
  Object.entries(map).forEach(([id,k])=>{if($(id)&&document.activeElement!==$(id))$(id).value=s[k]});
- $("kContacts").textContent=s.contacts;$("kOffers").textContent=s.offers;$("kOrders").textContent=s.orders;$("kNew").textContent=s.new;
+ $("kContacts").textContent=s.contacts;$("kOffers").textContent=s.offers;$("kOrders").textContent=(state.orders||[]).filter(o=>o.status!=="Отменён").length||s.orders;$("kNew").textContent=s.new;renderFunnel();
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));["home","tasks","clients","sales","finance"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab));});
 if($("addTask"))$("addTask").onclick=()=>{const title=$("newTask").value.trim();if(!title)return;const dueRaw=$("newTaskDue").value;state.tasks.push({title,note:$("newTaskNote").value.trim(),dueAt:dueRaw?new Date(dueRaw).toISOString():"",done:false});$("newTask").value="";$("newTaskNote").value="";$("newTaskDue").value="";save()};
@@ -436,7 +473,7 @@ $('dashStart').onclick=()=>$('dashTasks').click();
 $('dashTasks').onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
 $('dashClients').onclick=()=>document.querySelector('[data-tab="clients"]')?.click();
 if($("homeAiOpen"))$("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
-renderHome();renderTasks();renderClients();renderSales();renderInventory();initFinance();renderCoach();showDailyWelcome();
+renderHome();renderTasks();renderClients();renderSales();renderInventory();renderOrders();renderFunnel();initFinance();renderCoach();showDailyWelcome();
 
 </script>
 </body>
