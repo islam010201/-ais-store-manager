@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1220">
-<meta name="description" content="Ais.Store Manager — панель собственника для контроля оптовых продаж телефонов.">
+<meta name="description" content="AIS Sales Manager — ежедневная система менеджера для роста оптовых продаж телефонов.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>AIS.Store Manager 4.1 — Excel склад</title>
+<title>AIS Sales Manager 5.0 — Рост продаж</title>
 <style>
 :root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--text:#f4f7fb;--muted:#9aabc3;--blue:#d8ff3e;--green:#9bdc28;--line:#263650;--amber:#ffbf5b}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111e,#111d31);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -171,6 +171,15 @@ nav .tab{letter-spacing:-.1px}
 /* AIS.Store Manager 4.0 — inventory worksheet */
 .inventory-table-wrap{overflow-x:auto;margin-top:12px}.inventory-table{width:100%;border-collapse:collapse;min-width:650px;font-size:13px}.inventory-table th,.inventory-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}.inventory-table th{font-size:11px;color:var(--muted);text-transform:uppercase}.inventory-total{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.inventory-total .notice{flex:1;min-width:130px}.inventory-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.inventory-actions button{flex:1;min-width:130px}
 
+
+/* AIS Sales Manager 5.0 — single-purpose manager-first dashboard */
+#finance,#inventoryWorkspace,.sales-quick,.sales-note{display:none!important}
+.sales-dashboard{display:block}
+.dash-hero{background:linear-gradient(130deg,#171a15,#303a27);color:#fff;border-radius:22px;padding:25px 23px;margin-bottom:13px;box-shadow:0 8px 24px rgba(20,25,12,.12);border:1px solid #39432d}
+.dash-hero h1{font-size:clamp(32px,7vw,49px);letter-spacing:-1.4px;margin:12px 0}.dash-hero h1 span{color:#d9ff45}.dash-hero p{color:#e1e7d9;line-height:1.5;max-width:500px;margin:0 0 18px}.dash-greeting{color:#d9ff45;font-weight:800;font-size:13px;margin-top:8px}.dash-actions{display:flex;gap:9px;flex-wrap:wrap}.dash-actions button{min-height:48px}.dash-secondary{background:transparent!important;border-color:#68745a!important;color:#fff!important}
+.dash-goal{margin-bottom:13px;border-top:4px solid #d9ff45}.dash-goal h2{margin:4px 0 0}.goal-number{font-size:27px;font-weight:950;white-space:nowrap}.goal-number small{font-size:12px;color:#62675f;font-weight:700}.goal-foot{font-size:12px;color:#62675f}.dash-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:13px}.dash-kpi{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:#fff!important;color:#20231d!important;border:1px solid #dfe3d8!important;border-top:3px solid #d9ff45!important;border-radius:15px;padding:14px;min-width:0;gap:7px}.dash-kpi span{font-size:10px;letter-spacing:.6px;font-weight:900;color:#62675f}.dash-kpi strong{font-size:27px;letter-spacing:-.6px}.dash-kpi small{font-size:11px;color:#62675f;line-height:1.4}.dash-work-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}.dash-focus h2,.dash-ai h2{margin-bottom:12px}.focus-line{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid #e8ebe4;align-items:flex-start}.focus-line>b{display:grid;place-items:center;background:#d9ff45;border-radius:8px;min-width:31px;height:31px;font-size:12px}.focus-line strong{display:block;font-size:14px}.focus-line small{display:block;color:#62675f;font-size:12px;line-height:1.45;margin-top:3px}.full-btn{width:100%;margin-top:14px}.dash-ai{background:#20231d!important;color:#fff!important;border-color:#343b2c!important}.dash-ai p{color:#e1e6da;font-size:13px;line-height:1.55}.ai-symbol{font-size:24px;color:#d9ff45}.ai-open{background:#d9ff45!important;color:#20231d!important;border:0!important;width:100%;margin:5px 0 12px}.ai-tip{border-top:1px solid #414837;padding-top:12px;color:#e0e5d8;font-size:12px;line-height:1.55}.ai-tip b{color:#d9ff45}.dash-footnote{font-size:11px;color:#62675f;padding:13px 2px}.sales-kpi-form{margin-top:12px}
+@media(max-width:760px){.dash-hero{padding:20px 17px}.dash-hero h1{font-size:34px}.dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dash-kpi{padding:12px}.dash-kpi strong{font-size:25px}.dash-work-grid{grid-template-columns:1fr}.goal-number{font-size:24px}.goal-foot{gap:6px;align-items:flex-start;flex-direction:column}nav{grid-template-columns:repeat(2,minmax(0,1fr));display:grid}}
+
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -209,38 +218,45 @@ if ('serviceWorker' in navigator) {
   </header>
   <nav>
     <button class="tab active" data-tab="home">Главная</button>
-    <button class="tab" data-tab="tasks">🎯 Менеджер</button>
-    <button class="tab" data-tab="clients">Клиенты</button>
-    <button class="tab" data-tab="sales">🛒 Отдел продаж</button>
-    <button class="tab" data-tab="finance">📊 Бухгалтерия</button>
+    <button class="tab" data-tab="tasks">🎯 Мои действия</button>
+    <button class="tab" data-tab="clients">👥 Клиенты</button>
+    <button class="tab" data-tab="sales">📈 Результат продаж</button>
   </nav>
 
-  <section id="home" class="department-home">
-    <div class="department-home-heading">
-      <div class="sales-eyebrow">AIS.STORE · WORKSPACE</div>
-      <h1>Выбери отдел</h1>
-      <p class="muted">Каждый экран — одна задача.</p>
+  <section id="home" class="sales-dashboard">
+    <div class="dash-hero">
+      <div class="sales-eyebrow">AIS.STORE · SALES PERFORMANCE</div>
+      <div id="dailyGreeting" class="dash-greeting">Сегодня твой фокус — продажи.</div>
+      <h1>Больше контактов.<br><span>Больше заказов.</span></h1>
+      <p>Рабочий экран менеджера: каждый день двигай оптовых клиентов к повторному заказу.</p>
+      <div class="dash-actions">
+        <button class="primary" id="dashStart" type="button">Начать работу →</button>
+        <button class="dash-secondary" id="dashClients" type="button">Связаться с клиентами</button>
+      </div>
     </div>
-    <div class="department-launcher">
-      <button class="department-tile manager-tile" data-open-dept="tasks" type="button">
-        <span class="department-icon">🎯</span><span class="department-title">Менеджер</span><span class="department-desc">Задачи дня, звонки и мотивация</span><span class="department-arrow">Открыть отдел →</span>
-      </button>
-      <button class="department-tile clients-tile" data-open-dept="clients" type="button">
-        <span class="department-icon">👥</span><span class="department-title">Клиенты</span><span class="department-desc">База оптовиков и следующие контакты</span><span class="department-arrow">Открыть отдел →</span>
-      </button>
-      <button class="department-tile sales-tile" data-open-dept="sales" type="button">
-        <span class="department-icon">🛒</span><span class="department-title">Отдел продаж</span><span class="department-desc">Заказы и рабочие операции</span><span class="department-arrow">Открыть отдел →</span>
-      </button>
-      <button class="department-tile finance-tile" data-open-dept="finance" type="button">
-        <span class="department-icon">📊</span><span class="department-title">Бухгалтерия</span><span class="department-desc">Финансы и оборотные деньги</span><span class="department-arrow">Открыть отдел →</span>
-      </button>
+    <div class="dash-goal card">
+      <div class="row"><div><div class="muted">ГЛАВНАЯ ЦЕЛЬ</div><h2>500 телефонов в неделю</h2></div><div class="goal-number"><span id="dashUnits">75</span><small> / 500 шт.</small></div></div>
+      <div class="progress"><div id="dashGoalProgress"></div></div>
+      <div class="row goal-foot"><span id="dashGoalPercent">15% от цели</span><span id="dashGoalGap">Осталось 425 телефонов</span></div>
     </div>
-    <div class="home-ai-card">
-      <div class="home-ai-head"><span class="home-ai-icon">✦</span><div><strong>ИИ-помощник AIS</strong><small>Планирование и подсказки владельцу</small></div></div>
-      <p>Помогу определить следующий шаг: связаться с оптовиками, подготовить предложение, проверить заказы или подвести итоги дня.</p>
-      <button class="home-ai-button" id="homeAiOpen" type="button">Открыть помощника →</button>
+    <div class="dash-kpis">
+      <button class="dash-kpi" data-go="clients" type="button"><span>ОПТОВЫЕ КЛИЕНТЫ</span><strong id="dashClientsCount">0</strong><small>В базе · открыть клиентов →</small></button>
+      <button class="dash-kpi" data-go="sales" type="button"><span>ЗАКАЗЫ ЗА НЕДЕЛЮ</span><strong id="dashOrders">15</strong><small>Фиксируй подтверждённые заказы →</small></button>
+      <button class="dash-kpi" data-go="sales" type="button"><span>КОНТАКТЫ ЗА НЕДЕЛЮ</span><strong id="dashContacts">180</strong><small>План активности →</small></button>
+      <button class="dash-kpi" data-go="sales" type="button"><span>ВАЛОВАЯ ПРИБЫЛЬ*</span><strong id="dashProfit">$1,125</strong><small>*Оценка по KPI недели →</small></button>
+    </div>
+    <div class="dash-work-grid">
+      <div class="card dash-focus"><div class="row"><h2>План менеджера на сегодня</h2><span class="pill">ФОКУС</span></div>
+        <div class="focus-line"><b>01</b><div><strong>Связаться с оптовиками</strong><small>Узнай потребность и дату следующего заказа.</small></div></div>
+        <div class="focus-line"><b>02</b><div><strong>Отправить точное предложение</strong><small>Только реальные наличие, цена и условия.</small></div></div>
+        <div class="focus-line"><b>03</b><div><strong>Вернуться к тем, кто получил прайс</strong><small>Спроси, что мешает подтвердить заказ.</small></div></div>
+        <div class="focus-line"><b>04</b><div><strong>Закрыть следующий заказ</strong><small>Зафиксируй модели, количество и отгрузку.</small></div></div>
+        <button class="primary full-btn" id="dashTasks" type="button">Открыть мои действия →</button>
+      </div>
+      <div class="card dash-ai"><div class="ai-symbol">✦</div><div class="sales-eyebrow">AIS SALES COACH</div><h2>ИИ-помощник менеджера</h2><p>Поможет выбрать следующий шаг: кому звонить, кому повторно написать и как довести клиента до заказа.</p><button id="homeAiOpen" class="ai-open" type="button">Получить следующий шаг →</button><div class="ai-tip"><b>Правило дня</b><br>Не заканчивай разговор без следующего шага: заказ, отправка прайса или дата повторного контакта.</div></div>
     </div>
     <div id="upcomingTaskCard" class="upcoming-task-card" aria-live="polite"></div>
+    <div class="dash-footnote">Данные и KPI сохраняются в браузере этого устройства. Перед обновлением приложения делай резервную копию.</div>
   </section>
 
   <section id="tasks" class="hidden">
@@ -263,7 +279,7 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <section id="sales" class="hidden">
-    <div class="sales-heading"><div><div class="sales-eyebrow">AIS.STORE · WHOLESALE</div><h1>Отдел продаж</h1><p class="muted">Заказы, клиенты и результат — в одном рабочем месте.</p></div><div class="sales-mark">AIS<span>+</span></div></div><div class="sales-quick"><div class="sales-quick-card"><b>01</b><span>План продаж</span><small>Обновить KPI недели</small></div><div class="sales-quick-card"><b>02</b><span>Клиенты</span><small>Открыть базу покупателей</small></div><div class="sales-quick-card"><b>03</b><span>Наличие</span><small>Проверить товар перед обещанием</small></div><div class="sales-quick-card"><b>04</b><span>Возврат / ремонт</span><small>Зафиксировать проблему телефона</small></div></div><p class="sales-note">Складская ведомость: каждая запись хранится на этом устройстве. Для полного учёта IMEI добавляй отдельную запись на каждый телефон.</p>
+    <div class="sales-heading"><div><div class="sales-eyebrow">AIS.STORE · WHOLESALE</div><h1>Результат продаж</h1><p class="muted">Измеряй действия, которые превращаются в подтверждённые оптовые заказы.</p></div><div class="sales-mark">AIS<span>+</span></div></div><div class="sales-quick"><div class="sales-quick-card"><b>01</b><span>План продаж</span><small>Обновить KPI недели</small></div><div class="sales-quick-card"><b>02</b><span>Клиенты</span><small>Открыть базу покупателей</small></div><div class="sales-quick-card"><b>03</b><span>Наличие</span><small>Проверить товар перед обещанием</small></div><div class="sales-quick-card"><b>04</b><span>Возврат / ремонт</span><small>Зафиксировать проблему телефона</small></div></div><p class="sales-note">Складская ведомость: каждая запись хранится на этом устройстве. Для полного учёта IMEI добавляй отдельную запись на каждый телефон.</p>
     <div class="card" id="inventoryWorkspace"><h2>Склад · ведомость товара</h2><p class="muted">Добавляй модель, IMEI, количество и закупочную стоимость. Сумма считается автоматически.</p>
       <div class="formgrid">
         <div><label class="field">Модель / товар</label><input id="invModel" placeholder="iPhone 15 Pro 256 GB"></div>
@@ -280,7 +296,7 @@ if ('serviceWorker' in navigator) {
       <div class="inventory-actions"><button class="mini primary" id="exportInventoryExcel" type="button">Скачать Excel (.xlsx)</button><button class="mini" id="exportInventoryCsv" type="button">Экспорт в CSV</button></div>
       <div class="notice">Важно: данные сохраняются только в этом браузере. Перед обновлением приложения сделай резервную копию в меню приложения.</div>
     </div>
-    <div class="card"><h2>Итоги текущей недели</h2><div class="formgrid"><div><label class="field">Продано телефонов, шт.</label><input id="sUnits" type="number" min="0" value="75"></div><div><label class="field">Активные покупатели</label><input id="sActive" type="number" min="0" value="20"></div><div><label class="field">Валовая прибыль на телефон, $</label><input id="sMargin" type="number" min="0" step=".5" value="15"></div><div><label class="field">Новые / возвращённые клиенты</label><input id="sNew" type="number" min="0" value="3"></div><div><label class="field">Целевые контакты за неделю</label><input id="sContacts" type="number" min="0" value="180"></div><div><label class="field">Предложения отправлены</label><input id="sOffers" type="number" min="0" value="40"></div><div><label class="field">Повторные касания</label><input id="sFollowups" type="number" min="0" value="40"></div><div><label class="field">Заказы получены</label><input id="sOrders" type="number" min="0" value="15"></div></div><button class="primary" id="saveSales">Сохранить KPI</button></div>
+    <div class="card sales-kpi-form"><h2>KPI менеджера · текущая неделя</h2><p class="muted">Вводи фактические цифры. Цель — улучшать не только продажи, но и активность, повторные касания и конверсию.</p><div class="formgrid"><div><label class="field">Продано телефонов, шт.</label><input id="sUnits" type="number" min="0" value="75"></div><div><label class="field">Активные покупатели</label><input id="sActive" type="number" min="0" value="20"></div><div><label class="field">Валовая прибыль на телефон, $</label><input id="sMargin" type="number" min="0" step=".5" value="15"></div><div><label class="field">Новые / возвращённые клиенты</label><input id="sNew" type="number" min="0" value="3"></div><div><label class="field">Целевые контакты за неделю</label><input id="sContacts" type="number" min="0" value="180"></div><div><label class="field">Предложения отправлены</label><input id="sOffers" type="number" min="0" value="40"></div><div><label class="field">Повторные касания</label><input id="sFollowups" type="number" min="0" value="40"></div><div><label class="field">Заказы получены</label><input id="sOrders" type="number" min="0" value="15"></div></div><button class="primary" id="saveSales">Сохранить KPI</button></div>
     <div class="grid" style="margin-top:12px"><div class="card"><div class="muted">Контакты</div><div class="kpi" id="kContacts">180</div><div class="notice">Ориентир: 150–210 в неделю</div></div><div class="card"><div class="muted">Предложения</div><div class="kpi" id="kOffers">40</div><div class="notice">Ориентир: 30–50 в неделю</div></div><div class="card"><div class="muted">Заказы</div><div class="kpi" id="kOrders">15</div><div class="notice">Считай реальные заказы, не обещания</div></div><div class="card"><div class="muted">Новые / возвращённые</div><div class="kpi" id="kNew">3</div><div class="notice">Ориентир: 2–4 в неделю</div></div></div>
   </section>
 
@@ -289,7 +305,7 @@ if ('serviceWorker' in navigator) {
     <div class="two"><div class="card"><h2>Параметры</h2><label class="field">Продажи, телефонов в неделю</label><input id="fUnits" type="number" value="75" min="0"><label class="field">Себестоимость одного телефона, $</label><input id="fCost" type="number" value="400" min="0"><label class="field">Денежный цикл, дней</label><input id="fDays" type="number" value="14" min="0"><label class="field">Доступная отсрочка / предоплаты, $</label><input id="fCredit" type="number" value="0" min="0"><label class="field">Свободные оборотные деньги, $</label><input id="fCash" type="number" value="0" min="0"><button class="primary" id="calcFinance">Рассчитать</button></div>
     <div class="card"><h2>Результат</h2><div class="muted">Ориентировочная потребность в капитале</div><div class="kpi" id="capitalNeed">$60,000</div><div class="muted">Оценка дефицита средств</div><div class="kpi" id="capitalGap">$60,000</div><div class="notice">Формула: недельные продажи × себестоимость × дни денежного цикла ÷ 7. Затем вычитаются доступные отсрочки / предоплаты. Это приближение, не бухгалтерский баланс и не финансовая рекомендация.</div></div></div>
   </section>
-  <div class="footer">Ais.Store · MVP для личного контроля · Данные хранятся в браузере на этом устройстве. Экспортируй резервную копию.</div>
+  <div class="footer">AIS Sales Manager 5.0 · Фокус на оптовых продажах · Данные хранятся в браузере на этом устройстве.</div>
 </div>
 <script>
 const $=id=>document.getElementById(id);
@@ -321,7 +337,19 @@ try{coachIndex=Math.max(0,Math.min(coachSteps.length-1,Number(localStorage.getIt
 function renderCoach(){const s=coachSteps[coachIndex];if(!s)return;$("coachTitle").textContent=s.title;$("coachText").textContent=s.text;$("coachTip").textContent="Совет помощника: "+s.tip;$("coachStep").textContent=`ШАГ ${coachIndex+1} ИЗ ${coachSteps.length}`;$("coachProgress").style.width=((coachIndex)/coachSteps.length*100)+"%";$("completeStepBtn").textContent=coachIndex===coachSteps.length-1?"Завершить рабочий день ✓":"Этап выполнен → следующий";$("coachFeedback").textContent=coachIndex===0?"Начни с 10 оптовиков. После этапа переходи к предложению.":coachIndex===coachSteps.length-1?"После завершения подготовь план на завтра.":"Следующий шаг откроется после подтверждения выполнения.";}
 function showDailyWelcome(){const h=new Date().getHours();const greet=h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер";const el=$("dailyGreeting");if(el)el.textContent=greet+"! План на сегодня готов.";}
 
-function renderHome(){ /* Главная намеренно содержит только отделы и ИИ-помощника. */ }
+function renderHome(){
+ const sales=state.sales||{}; const units=Math.max(0,Number(sales.units)||0), target=500;
+ const pct=Math.min(100,Math.round(units/target*100));
+ if($("dashUnits"))$("dashUnits").textContent=units;
+ if($("dashGoalProgress"))$("dashGoalProgress").style.width=pct+"%";
+ if($("dashGoalPercent"))$("dashGoalPercent").textContent=pct+"% от цели";
+ if($("dashGoalGap"))$("dashGoalGap").textContent=units>=target?"Цель выполнена!":"Осталось "+(target-units)+" телефонов";
+ if($("dashClientsCount"))$("dashClientsCount").textContent=(state.clients||[]).length;
+ if($("dashOrders"))$("dashOrders").textContent=Number(sales.orders)||0;
+ if($("dashContacts"))$("dashContacts").textContent=Number(sales.contacts)||0;
+ if($("dashProfit"))$("dashProfit").textContent="$"+Math.round(units*(Number(sales.margin)||0)).toLocaleString("en-US");
+ const g=$("dailyGreeting"); if(g){const h=new Date().getHours();g.textContent=(h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер")+". Сегодня работаем на результат.";}
+}
 
 function renderUpcomingTask(){
  const host=$("upcomingTaskCard"); if(!host)return;
@@ -403,7 +431,10 @@ $("startDayBtn").onclick=()=>{document.querySelector('[data-tab="tasks"]').click
 $("showTasksBtn").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
 $("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex++;localStorage.setItem("aisCoachStep",String(coachIndex));renderCoach();$("coachFeedback").textContent="Отлично! Прочитай следующий этап и выполни его.";}else{$("coachProgress").style.width="100%";$("coachFeedback").textContent="Рабочий день завершён. Запиши KPI и подготовь план на завтра.";localStorage.setItem("aisCoachStep","0");coachIndex=0;}};
 $("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
-document.querySelectorAll('[data-open-dept]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.openDept}"]`).click()));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.go}"]`).click()));
+$('dashStart').onclick=()=>$('dashTasks').click();
+$('dashTasks').onclick=()=>document.querySelector('[data-tab="tasks"]').click();
+$('dashClients').onclick=()=>document.querySelector('[data-tab="clients"]').click();
 $("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
 renderHome();renderTasks();renderClients();renderSales();renderInventory();initFinance();renderCoach();showDailyWelcome();
 
