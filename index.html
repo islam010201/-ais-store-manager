@@ -334,7 +334,7 @@ const coachSteps=[
 ];
 let coachIndex=0;
 try{coachIndex=Math.max(0,Math.min(coachSteps.length-1,Number(localStorage.getItem("aisCoachStep")||0)))}catch(e){}
-function renderCoach(){const s=coachSteps[coachIndex];if(!s)return;$("coachTitle").textContent=s.title;$("coachText").textContent=s.text;$("coachTip").textContent="Совет помощника: "+s.tip;$("coachStep").textContent=`ШАГ ${coachIndex+1} ИЗ ${coachSteps.length}`;$("coachProgress").style.width=((coachIndex)/coachSteps.length*100)+"%";$("completeStepBtn").textContent=coachIndex===coachSteps.length-1?"Завершить рабочий день ✓":"Этап выполнен → следующий";$("coachFeedback").textContent=coachIndex===0?"Начни с 10 оптовиков. После этапа переходи к предложению.":coachIndex===coachSteps.length-1?"После завершения подготовь план на завтра.":"Следующий шаг откроется после подтверждения выполнения.";}
+function renderCoach(){if(!$("coachTitle"))return;const s=coachSteps[coachIndex];if(!s)return;$("coachTitle").textContent=s.title;$("coachText").textContent=s.text;$("coachTip").textContent="Совет помощника: "+s.tip;$("coachStep").textContent=`ШАГ ${coachIndex+1} ИЗ ${coachSteps.length}`;$("coachProgress").style.width=((coachIndex)/coachSteps.length*100)+"%";$("completeStepBtn").textContent=coachIndex===coachSteps.length-1?"Завершить рабочий день ✓":"Этап выполнен → следующий";$("coachFeedback").textContent=coachIndex===0?"Начни с 10 оптовиков. После этапа переходи к предложению.":coachIndex===coachSteps.length-1?"После завершения подготовь план на завтра.":"Следующий шаг откроется после подтверждения выполнения.";}
 function showDailyWelcome(){const h=new Date().getHours();const greet=h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер";const el=$("dailyGreeting");if(el)el.textContent=greet+"! План на сегодня готов.";}
 
 function renderHome(){
@@ -355,7 +355,7 @@ function renderUpcomingTask(){
  const host=$("upcomingTaskCard"); if(!host)return;
  const now=Date.now();
  const pending=(state.tasks||[]).filter(t=>!t.done&&t.dueAt&&Number.isFinite(new Date(t.dueAt).getTime())).sort((a,b)=>new Date(a.dueAt)-new Date(b.dueAt));
- if(!pending.length){host.className="upcoming-task-card";host.innerHTML='<div class="upcoming-task-head">⏰ Ближайшая задача</div><div class="upcoming-task-title">Пока нет задач со временем</div><div class="upcoming-task-meta">Добавь дату и время в разделе «Менеджер» — здесь появится ближайшая задача.</div><div class="upcoming-task-actions"><button class="primary" type="button" id="goAddTimedTask">Добавить задачу</button></div>';const b=$("goAddTimedTask");if(b)b.onclick=()=>document.querySelector('[data-tab="tasks"]').click();return;}
+ if(!pending.length){host.className="upcoming-task-card";host.innerHTML='<div class="upcoming-task-head">⏰ Ближайшая задача</div><div class="upcoming-task-title">Пока нет задач со временем</div><div class="upcoming-task-meta">Добавь дату и время в разделе «Менеджер» — здесь появится ближайшая задача.</div><div class="upcoming-task-actions"><button class="primary" type="button" id="goAddTimedTask">Добавить задачу</button></div>';const b=$("goAddTimedTask");if(b)b.onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();return;}
  const t=pending[0], due=new Date(t.dueAt).getTime(), mins=Math.round((due-now)/60000);
  let label,cls="upcoming-task-card",timeText;
  if(mins<0){label="Просрочено";cls+=" overdue";timeText="Просрочено на "+formatMinutes(Math.abs(mins));}
@@ -363,8 +363,8 @@ function renderUpcomingTask(){
  else {label="Следующая задача";timeText="Через "+formatMinutes(mins);}
  host.className=cls;
  host.innerHTML=`<div class="upcoming-task-head">⏰ ${label}</div><div class="upcoming-task-title">${esc(t.title)}</div><div class="upcoming-task-meta">${esc(t.note||"")} ${t.note?"· ":""}${esc(new Date(t.dueAt).toLocaleString("ru-RU",{day:"2-digit",month:"long",hour:"2-digit",minute:"2-digit"}))}</div><div class="upcoming-task-meta"><b>${timeText}</b></div><div class="upcoming-task-actions"><button class="primary" type="button" id="openUpcomingTask">Открыть задачу</button><button class="mini" type="button" id="completeUpcomingTask">Отметить выполненной</button></div>`;
- $("openUpcomingTask").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
- $("completeUpcomingTask").onclick=()=>{const idx=state.tasks.indexOf(t);if(idx>=0){state.tasks[idx].done=true;save();}};
+ if($("openUpcomingTask"))$("openUpcomingTask").onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
+ if($("completeUpcomingTask"))$("completeUpcomingTask").onclick=()=>{const idx=state.tasks.indexOf(t);if(idx>=0){state.tasks[idx].done=true;save();}};
 }
 function formatMinutes(m){if(m<60)return m+" мин.";const h=Math.floor(m/60),r=m%60;return h+" ч"+(r?" "+r+" мин.":"");}
 function renderTasks(){
@@ -417,25 +417,25 @@ function renderSales(){
  $("kContacts").textContent=s.contacts;$("kOffers").textContent=s.offers;$("kOrders").textContent=s.orders;$("kNew").textContent=s.new;
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));["home","tasks","clients","sales","finance"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab));});
-$("addTask").onclick=()=>{const title=$("newTask").value.trim();if(!title)return;const dueRaw=$("newTaskDue").value;state.tasks.push({title,note:$("newTaskNote").value.trim(),dueAt:dueRaw?new Date(dueRaw).toISOString():"",done:false});$("newTask").value="";$("newTaskNote").value="";$("newTaskDue").value="";save()};
-$("resetTasks").onclick=()=>{if(confirm("Снять все отметки выполнения?")){state.tasks.forEach(t=>t.done=false);save()}};
-$("addClient").onclick=()=>{const name=$("cName").value.trim();if(!name){alert("Укажи название магазина или имя клиента.");return}state.clients.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),name,region:$("cRegion").value.trim(),phone:$("cPhone").value.trim(),type:$("cType").value,order:Math.max(0,+$("cOrder").value||0),status:$("cStatus").value,nextContact:$("cNext").value,lastContact:$("cLast").value,notes:$("cNotes").value.trim()});["cName","cRegion","cPhone","cNext","cLast","cNotes"].forEach(id=>$(id).value="");save()};
+if($("addTask"))$("addTask").onclick=()=>{const title=$("newTask").value.trim();if(!title)return;const dueRaw=$("newTaskDue").value;state.tasks.push({title,note:$("newTaskNote").value.trim(),dueAt:dueRaw?new Date(dueRaw).toISOString():"",done:false});$("newTask").value="";$("newTaskNote").value="";$("newTaskDue").value="";save()};
+if($("resetTasks"))$("resetTasks").onclick=()=>{if(confirm("Снять все отметки выполнения?")){state.tasks.forEach(t=>t.done=false);save()}};
+if($("addClient"))$("addClient").onclick=()=>{const name=$("cName").value.trim();if(!name){alert("Укажи название магазина или имя клиента.");return}state.clients.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),name,region:$("cRegion").value.trim(),phone:$("cPhone").value.trim(),type:$("cType").value,order:Math.max(0,+$("cOrder").value||0),status:$("cStatus").value,nextContact:$("cNext").value,lastContact:$("cLast").value,notes:$("cNotes").value.trim()});["cName","cRegion","cPhone","cNext","cLast","cNotes"].forEach(id=>$(id).value="");save()};
 $("clientSearch").oninput=renderClients;$("clientFilter").onchange=renderClients;
-$("saveSales").onclick=()=>{state.sales={units:+$("sUnits").value||0,active:+$("sActive").value||0,margin:+$("sMargin").value||0,new:+$("sNew").value||0,contacts:+$("sContacts").value||0,offers:+$("sOffers").value||0,followups:+$("sFollowups").value||0,orders:+$("sOrders").value||0};save();alert("KPI сохранены.")};
+if($("saveSales"))$("saveSales").onclick=()=>{state.sales={units:+$("sUnits").value||0,active:+$("sActive").value||0,margin:+$("sMargin").value||0,new:+$("sNew").value||0,contacts:+$("sContacts").value||0,offers:+$("sOffers").value||0,followups:+$("sFollowups").value||0,orders:+$("sOrders").value||0};save();alert("KPI сохранены.")};
 function calcFinance(){const f={units:+$("fUnits").value||0,cost:+$("fCost").value||0,days:+$("fDays").value||0,credit:+$("fCredit").value||0,cash:+$("fCash").value||0};state.finance=f;const need=Math.max(0,f.units*f.cost*f.days/7-f.credit);$("capitalNeed").textContent="$"+Math.round(need).toLocaleString("en-US");$("capitalGap").textContent="$"+Math.round(Math.max(0,need-f.cash)).toLocaleString("en-US");localStorage.setItem("aisStoreMVP",JSON.stringify(state))}
-$("calcFinance").onclick=calcFinance;
-$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ais-store-backup.json";a.click();URL.revokeObjectURL(url)};
-function initFinance(){const f=state.finance||defaultState.finance;Object.entries({fUnits:"units",fCost:"cost",fDays:"days",fCredit:"credit",fCash:"cash"}).forEach(([id,k])=>$(id).value=f[k]);calcFinance()}
+if($("calcFinance"))$("calcFinance").onclick=calcFinance;
+if($("exportBtn"))$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ais-store-backup.json";a.click();URL.revokeObjectURL(url)};
+function initFinance(){if(!$("fUnits"))return;const f=state.finance||defaultState.finance;Object.entries({fUnits:"units",fCost:"cost",fDays:"days",fCredit:"credit",fCash:"cash"}).forEach(([id,k])=>$(id).value=f[k]);calcFinance()}
 
-$("startDayBtn").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();$("coachFeedback").textContent="Рабочий день начат. Выполняй этапы последовательно.";};
-$("showTasksBtn").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
-$("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex++;localStorage.setItem("aisCoachStep",String(coachIndex));renderCoach();$("coachFeedback").textContent="Отлично! Прочитай следующий этап и выполни его.";}else{$("coachProgress").style.width="100%";$("coachFeedback").textContent="Рабочий день завершён. Запиши KPI и подготовь план на завтра.";localStorage.setItem("aisCoachStep","0");coachIndex=0;}};
-$("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
-document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.go}"]`).click()));
+if($("startDayBtn"))$("startDayBtn").onclick=()=>{document.querySelector('[data-tab="tasks"]')?.click();$("coachFeedback").textContent="Рабочий день начат. Выполняй этапы последовательно.";};
+if($("showTasksBtn"))$("showTasksBtn").onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
+if($("completeStepBtn"))$("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex++;localStorage.setItem("aisCoachStep",String(coachIndex));renderCoach();$("coachFeedback").textContent="Отлично! Прочитай следующий этап и выполни его.";}else{$("coachProgress").style.width="100%";$("coachFeedback").textContent="Рабочий день завершён. Запиши KPI и подготовь план на завтра.";localStorage.setItem("aisCoachStep","0");coachIndex=0;}};
+if($("notifyBtn"))$("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.go}"]`)?.click()));
 $('dashStart').onclick=()=>$('dashTasks').click();
-$('dashTasks').onclick=()=>document.querySelector('[data-tab="tasks"]').click();
-$('dashClients').onclick=()=>document.querySelector('[data-tab="clients"]').click();
-$("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
+$('dashTasks').onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
+$('dashClients').onclick=()=>document.querySelector('[data-tab="clients"]')?.click();
+if($("homeAiOpen"))$("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
 renderHome();renderTasks();renderClients();renderSales();renderInventory();initFinance();renderCoach();showDailyWelcome();
 
 </script>
