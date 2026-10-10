@@ -158,6 +158,15 @@ nav .tab{letter-spacing:-.1px}
 
 .home-ai-card{margin-top:16px;padding:18px;border-radius:18px;background:#20231d;color:#fff;border:1px solid #d9ff45;box-shadow:0 8px 22px rgba(20,25,12,.08)}
 .home-ai-head{display:flex;align-items:center;gap:12px}.home-ai-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#d9ff45;color:#20231d;font-size:25px;font-weight:900}.home-ai-head strong{display:block;color:#d9ff45;font-size:17px}.home-ai-head small{display:block;color:#d4d9ce;font-size:12px;margin-top:3px}.home-ai-card p{color:#eef0e9;font-size:14px;line-height:1.55;margin:14px 0}.home-ai-button{background:#d9ff45;color:#20231d;border:0;border-radius:12px;padding:12px 15px;font-weight:850;width:100%}
+
+.upcoming-task-card{margin-top:14px;border:1px solid var(--line);border-radius:18px;padding:16px;background:var(--card);box-shadow:var(--shadow)}
+.upcoming-task-head{display:flex;align-items:center;gap:9px;font-weight:850;margin-bottom:10px}
+.upcoming-task-title{font-size:18px;font-weight:850;margin:5px 0}
+.upcoming-task-meta{font-size:13px;color:var(--muted);margin-top:6px}
+.upcoming-task-card.soon{border-color:#d9ff45;box-shadow:0 0 0 1px rgba(217,255,69,.25)}
+.upcoming-task-card.overdue{border-color:#e8a45b}
+.upcoming-task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.upcoming-task-actions button{min-height:40px}
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -227,12 +236,13 @@ if ('serviceWorker' in navigator) {
       <p>Помогу определить следующий шаг: связаться с оптовиками, подготовить предложение, проверить заказы или подвести итоги дня.</p>
       <button class="home-ai-button" id="homeAiOpen" type="button">Открыть помощника →</button>
     </div>
+    <div id="upcomingTaskCard" class="upcoming-task-card" aria-live="polite"></div>
   </section>
 
   <section id="tasks" class="hidden">
     <h1>Рабочий день по этапам</h1><p class="muted">Выполняй шаг за шагом. После каждой отметки помощник покажет, что делать дальше.</p>
     <div class="card"><div class="row"><h2 id="todayTitle">План на сегодня</h2><button class="mini" id="resetTasks">Сбросить на новый день</button></div><div id="taskList"></div><div class="notice" style="margin:10px 0">Правило: сначала продажи и клиенты, затем заказы и наличие товара, в конце — деньги и отчёт.</div><div class="progress"><div id="taskProgress"></div></div><div class="notice" id="taskSummary"></div></div>
-    <div class="card" style="margin-top:12px"><h2>Добавить задачу</h2><div class="formgrid"><div><label class="field">Задача</label><input id="newTask" placeholder="Например, обзвонить 15 торговцев"></div><div><label class="field">Норма / заметка</label><input id="newTaskNote" placeholder="До 14:00"></div></div><button class="primary" id="addTask">Добавить задачу</button></div>
+    <div class="card" style="margin-top:12px"><h2>Добавить задачу</h2><div class="formgrid"><div><label class="field">Задача</label><input id="newTask" placeholder="Например, обзвонить 15 торговцев"></div><div><label class="field">Норма / заметка</label><input id="newTaskNote" placeholder="Например, уточнить заказ"></div><div><label class="field">Дата и время задачи</label><input id="newTaskDue" type="datetime-local"></div></div><button class="primary" id="addTask">Добавить задачу</button></div>
   </section>
 
   <section id="clients" class="hidden">
@@ -275,7 +285,7 @@ const defaultState={tasks:defaultTasks.map(t=>({...t,done:false})),clients:[],sa
 let state;
 try{state=JSON.parse(localStorage.getItem("aisStoreMVP")||"null")}catch(e){state=null}
 if(!state)state=structuredClone(defaultState);
-function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();}
+function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();renderUpcomingTask();}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 const coachSteps=[
@@ -292,10 +302,26 @@ function showDailyWelcome(){const h=new Date().getHours();const greet=h<12?"До
 
 function renderHome(){ /* Главная намеренно содержит только отделы и ИИ-помощника. */ }
 
+function renderUpcomingTask(){
+ const host=$("upcomingTaskCard"); if(!host)return;
+ const now=Date.now();
+ const pending=(state.tasks||[]).filter(t=>!t.done&&t.dueAt&&Number.isFinite(new Date(t.dueAt).getTime())).sort((a,b)=>new Date(a.dueAt)-new Date(b.dueAt));
+ if(!pending.length){host.className="upcoming-task-card";host.innerHTML='<div class="upcoming-task-head">⏰ Ближайшая задача</div><div class="upcoming-task-title">Пока нет задач со временем</div><div class="upcoming-task-meta">Добавь дату и время в разделе «Менеджер» — здесь появится ближайшая задача.</div><div class="upcoming-task-actions"><button class="primary" type="button" id="goAddTimedTask">Добавить задачу</button></div>';const b=$("goAddTimedTask");if(b)b.onclick=()=>document.querySelector('[data-tab="tasks"]').click();return;}
+ const t=pending[0], due=new Date(t.dueAt).getTime(), mins=Math.round((due-now)/60000);
+ let label,cls="upcoming-task-card",timeText;
+ if(mins<0){label="Просрочено";cls+=" overdue";timeText="Просрочено на "+formatMinutes(Math.abs(mins));}
+ else if(mins<=15){label="Скоро";cls+=" soon";timeText=mins===0?"Время выполнять сейчас":"Через "+formatMinutes(mins);}
+ else {label="Следующая задача";timeText="Через "+formatMinutes(mins);}
+ host.className=cls;
+ host.innerHTML=`<div class="upcoming-task-head">⏰ ${label}</div><div class="upcoming-task-title">${esc(t.title)}</div><div class="upcoming-task-meta">${esc(t.note||"")} ${t.note?"· ":""}${esc(new Date(t.dueAt).toLocaleString("ru-RU",{day:"2-digit",month:"long",hour:"2-digit",minute:"2-digit"}))}</div><div class="upcoming-task-meta"><b>${timeText}</b></div><div class="upcoming-task-actions"><button class="primary" type="button" id="openUpcomingTask">Открыть задачу</button><button class="mini" type="button" id="completeUpcomingTask">Отметить выполненной</button></div>`;
+ $("openUpcomingTask").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
+ $("completeUpcomingTask").onclick=()=>{const idx=state.tasks.indexOf(t);if(idx>=0){state.tasks[idx].done=true;save();}};
+}
+function formatMinutes(m){if(m<60)return m+" мин.";const h=Math.floor(m/60),r=m%60;return h+" ч"+(r?" "+r+" мин.":"");}
 function renderTasks(){
  $("todayTitle").textContent="План на "+new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
- $("taskList").innerHTML=state.tasks.map((t,i)=>`<div class="task ${t.done?"done":""}"><input type="checkbox" data-task="${i}" ${t.done?"checked":""}><label><b>${esc(t.title)}</b><small>${esc(t.note||"")}</small></label><button class="mini danger" data-del-task="${i}">Удалить</button></div>`).join("");
- const d=state.tasks.filter(t=>t.done).length,p=state.tasks.length?d/state.tasks.length*100:0;$("taskProgress").style.width=p+"%";$("taskSummary").textContent=`Выполнено ${d} из ${state.tasks.length} задач (${Math.round(p)}%).`;
+ $("taskList").innerHTML=state.tasks.map((t,i)=>`<div class="task ${t.done?"done":""}"><input type="checkbox" data-task="${i}" ${t.done?"checked":""}><label><b>${esc(t.title)}</b><small>${esc(t.note||"")}${t.dueAt?" · Срок: "+esc(new Date(t.dueAt).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})):""}</small></label><button class="mini danger" data-del-task="${i}">Удалить</button></div>`).join("");
+ const d=state.tasks.filter(t=>t.done).length,p=state.tasks.length?d/state.tasks.length*100:0;$("taskProgress").style.width=p+"%";$("taskSummary").textContent=`Выполнено ${d} из ${state.tasks.length} задач (${Math.round(p)}%).`;renderUpcomingTask();
  document.querySelectorAll("[data-task]").forEach(el=>el.onchange=()=>{state.tasks[+el.dataset.task].done=el.checked;save()});
  document.querySelectorAll("[data-del-task]").forEach(el=>el.onclick=()=>{state.tasks.splice(+el.dataset.delTask,1);save()});
 }
@@ -320,7 +346,7 @@ function renderSales(){
  $("kContacts").textContent=s.contacts;$("kOffers").textContent=s.offers;$("kOrders").textContent=s.orders;$("kNew").textContent=s.new;
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));["home","tasks","clients","sales","finance"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab));});
-$("addTask").onclick=()=>{const title=$("newTask").value.trim();if(!title)return;state.tasks.push({title,note:$("newTaskNote").value.trim(),done:false});$("newTask").value="";$("newTaskNote").value="";save()};
+$("addTask").onclick=()=>{const title=$("newTask").value.trim();if(!title)return;const dueRaw=$("newTaskDue").value;state.tasks.push({title,note:$("newTaskNote").value.trim(),dueAt:dueRaw?new Date(dueRaw).toISOString():"",done:false});$("newTask").value="";$("newTaskNote").value="";$("newTaskDue").value="";save()};
 $("resetTasks").onclick=()=>{if(confirm("Снять все отметки выполнения?")){state.tasks.forEach(t=>t.done=false);save()}};
 $("addClient").onclick=()=>{const name=$("cName").value.trim();if(!name){alert("Укажи название магазина или имя клиента.");return}state.clients.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),name,region:$("cRegion").value.trim(),phone:$("cPhone").value.trim(),type:$("cType").value,order:Math.max(0,+$("cOrder").value||0),status:$("cStatus").value,nextContact:$("cNext").value,lastContact:$("cLast").value,notes:$("cNotes").value.trim()});["cName","cRegion","cPhone","cNext","cLast","cNotes"].forEach(id=>$(id).value="");save()};
 $("clientSearch").oninput=renderClients;$("clientFilter").onchange=renderClients;
