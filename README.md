@@ -1,0 +1,1 @@
+# -ais-store-manager
