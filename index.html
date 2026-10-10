@@ -7,7 +7,7 @@
 <meta name="description" content="Ais.Store Manager — панель собственника для контроля оптовых продаж телефонов.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>AIS.Store Manager 3.4 — Интерфейсы отделов</title>
+<title>AIS.Store Manager 3.6 — Главное меню отделов</title>
 <style>
 :root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--text:#f4f7fb;--muted:#9aabc3;--blue:#d8ff3e;--green:#9bdc28;--line:#263650;--amber:#ffbf5b}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111e,#111d31);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -96,6 +96,65 @@ nav .tab.active{background:#d9ff45;border-color:#d9ff45;color:#20231d;box-shadow
 #motivationSplash .splash-skip{font-size:14px}
 @media(max-width:760px){nav{grid-template-columns:repeat(2,minmax(0,1fr));display:grid}nav .tab{font-size:12px;padding:10px 7px}#tasks,#finance{padding:10px}#sales{padding:10px}}
 
+
+
+/* AIS.Store Manager 3.5 — strong, unmistakable visual identity per department */
+#tasks{background:linear-gradient(180deg,#151a12 0,#242c1d 205px,#f5f7f1 205px)!important;border:1px solid #d9ff45!important;padding:16px!important;border-radius:20px!important}
+#tasks>h1{font-size:30px!important;color:#d9ff45!important;letter-spacing:-.5px}
+#tasks>p{color:#f1f5e9!important;font-weight:600}
+#tasks .card{background:#fff!important;border:1px solid #dfe5d7!important;border-radius:16px!important}
+#tasks .card:first-of-type{border-top:5px solid #d9ff45!important}
+#tasks #todayTitle{color:#20251b!important}
+#clients{background:linear-gradient(180deg,#173c5b 0,#285b80 150px,#f1f6fa 150px)!important;padding:16px!important;border-radius:20px!important;border:1px solid #c7dbe8!important}
+#clients>h1{color:#fff!important;border-left:5px solid #8bd6ff!important;padding-left:12px!important;margin-top:4px!important}
+#clients>p{color:#e4f2fc!important;font-weight:600}
+#clients .grid .card{background:#fff!important;border-top:4px solid #6bbbe9!important;border-radius:14px!important}
+#clients .two .card,#clients>.card{background:#fff!important;border-color:#d5e4ee!important;border-radius:15px!important}
+#clients h2{color:#173c5b!important}
+#clients button.primary{background:#17618c!important;border-color:#17618c!important;color:#fff!important}
+#clients input,#clients select,#clients textarea{background:#f8fbfd!important;border-color:#c8dce8!important;color:#1c3445!important}
+#sales{background:#f1f3ed!important;border:2px solid #d9ff45!important;border-radius:20px!important;padding:16px!important}
+#sales .sales-heading{min-height:155px!important;background:linear-gradient(125deg,#11140f,#303a24)!important;border:1px solid #53613b!important;border-bottom:5px solid #d9ff45!important}
+#sales .sales-heading h1{font-size:32px!important;letter-spacing:-.7px!important}
+#sales .sales-quick-card{background:#fff!important;border:1px solid #dce2d4!important;border-top:4px solid #d9ff45!important;min-height:120px!important}
+#sales .sales-quick-card span{font-size:15px!important}
+#sales .card{background:#fff!important;border:1px solid #dce2d4!important;border-left:4px solid #d9ff45!important;border-radius:14px!important}
+#finance{background:linear-gradient(180deg,#203c2a 0,#2d4a36 150px,#eef3ee 150px)!important;border:1px solid #c9d8ca!important;padding:16px!important;border-radius:20px!important}
+#finance>h1{background:transparent!important;color:#fff!important;padding:4px 2px 0!important;font-size:30px!important;letter-spacing:-.4px!important}
+#finance>p{background:#fff!important;border-left:5px solid #83a989!important;color:#46584a!important}
+#finance .card{background:#fff!important;border:1px solid #d4e0d5!important;border-top:5px solid #648a6b!important;border-radius:15px!important}
+#finance .kpi{font-size:30px!important;color:#21482c!important}
+#finance button.primary{background:#244d30!important;border-color:#244d30!important;color:#fff!important}
+#finance input{background:#fbfdfb!important;border-color:#cbd8cc!important;color:#203528!important}
+#home .welcome{min-height:205px!important;background:linear-gradient(125deg,#11140f,#303a24)!important}
+#home .grid .card{border-top:4px solid #d9ff45!important}
+nav .tab{letter-spacing:-.1px}
+@media(max-width:760px){#tasks,#clients,#sales,#finance{padding:10px!important}#tasks>h1,#clients>h1,#finance>h1{font-size:26px!important}#sales .sales-heading{min-height:130px!important}#clients .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* AIS.Store Manager 3.6 — clean department-only home screen */
+.department-home{padding:0 0 18px!important}
+.department-home-heading{background:#20231d;color:#fff;border-radius:18px;padding:22px 20px;margin-bottom:14px;border-bottom:4px solid #d9ff45}
+.department-home-heading h1{color:#fff;margin:9px 0 5px}
+.department-home-heading .muted{color:#d4d9ce;margin:0}
+.department-launcher{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.department-tile{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:9px;min-height:180px;padding:17px;border-radius:18px;border:1px solid #dfe2da;background:#fff;color:#20231d;box-shadow:0 5px 16px rgba(22,28,15,.05);white-space:normal}
+.department-tile:active{transform:scale(.985)}
+.department-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:13px;background:#d9ff45;color:#20231d;font-size:22px}
+.department-title{font-size:18px;font-weight:900;line-height:1.2}
+.department-desc{font-size:12px;line-height:1.45;color:#62675f;font-weight:500}
+.department-arrow{font-size:12px;font-weight:850;margin-top:auto;padding-top:7px;color:#35451c}
+.manager-tile{border-top:4px solid #d9ff45}
+.clients-tile{border-top:4px solid #6da8df}
+.clients-tile .department-icon{background:#e1efff}
+.sales-tile{border-top:4px solid #20231d}
+.sales-tile .department-icon{background:#20231d;color:#d9ff45}
+.finance-tile{border-top:4px solid #68a878}
+.finance-tile .department-icon{background:#e0f3e4;color:#245a35}
+.department-home-footer{text-align:center;color:#74796f;font-size:11px;padding:18px 6px 2px}
+#home.department-home~.footer{display:none}
+@media(max-width:420px){.department-home-heading{padding:18px}.department-launcher{gap:9px}.department-tile{padding:13px;min-height:174px}.department-title{font-size:16px}.department-desc{font-size:11px}}
+
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -116,7 +175,7 @@ if ('serviceWorker' in navigator) {
 <div class="app">
   <header class="top">
     <div><div class="brand">Ais<span>.Store</span> <span style="color:#fff;font-size:12px;font-weight:500">OWNER</span></div><div class="sub">OWNER CONTROL CENTER · ТВОЙ ЦИФРОВОЙ ПОМОЩНИК</div></div>
-    <div class="btnrow"><button id="notifyBtn">🔔 Напоминания</button><button id="exportBtn">Экспорт данных</button></div>
+    
   </header>
   <nav>
     <button class="tab active" data-tab="home">Главная</button>
@@ -126,33 +185,27 @@ if ('serviceWorker' in navigator) {
     <button class="tab" data-tab="finance">📊 Бухгалтерия</button>
   </nav>
 
-  <section id="home">
-    <div class="card welcome" style="border-color:#d8ff3e;background:linear-gradient(135deg,#172337,#101a2a);margin-bottom:14px">
-      <div class="pill" style="display:inline-block;background:#27341b;color:#d8ff3e">AIS AI · ПОМОЩНИК СОБСТВЕННИКА</div>
-      <h1 style="margin-top:14px">Добрый день, <span style="color:#d8ff3e">Номанов Исломбек!</span></h1>
-      <p class="muted" style="font-size:16px;line-height:1.55">Приступим к работе. Я помогу пройти задачи по этапам, отслеживать продажи и понять, что делать дальше.</p>
-      <div class="row" style="justify-content:flex-start;flex-wrap:wrap"><button class="primary" id="startDayBtn">▶ Начать рабочий день</button><span class="notice" id="dailyGreeting">Сначала выберем главный приоритет.</span></div>
+  <section id="home" class="department-home">
+    <div class="department-home-heading">
+      <div class="sales-eyebrow">AIS.STORE · WORKSPACE</div>
+      <h1>Выбери отдел</h1>
+      <p class="muted">Каждый экран — одна задача. Ничего лишнего.</p>
     </div>
-    <h1>Панель управления</h1>
-    <p class="muted">Главное за сегодня — крупно, понятно и без лишних действий.</p>
-    <div class="grid">
-      <div class="card"><div class="muted">Продано за неделю</div><div class="kpi" id="weeklySales">75 <small>шт.</small></div><div class="muted">Цель: 500 шт.</div><div class="progress"><div id="salesProgress"></div></div><div class="notice" id="salesPercent">15% недельной цели</div></div>
-      <div class="card"><div class="muted">Активные клиенты</div><div class="kpi" id="activeClients">20 <small>/ 300</small></div><div class="notice">Цель для масштаба: 100 активных оптовиков</div></div>
-      <div class="card"><div class="muted">Валовая прибыль</div><div class="kpi" id="grossProfit">$1,125</div><div class="notice">Расчёт по продажам и прибыли на телефон</div></div>
-      <div class="card"><div class="muted">Задачи на сегодня</div><div class="kpi" id="taskCount">0/6</div><div class="notice">Отметь выполненное во вкладке «Задачи»</div></div>
+    <div class="department-launcher">
+      <button class="department-tile manager-tile" data-open-dept="tasks" type="button">
+        <span class="department-icon">🎯</span><span class="department-title">Менеджер</span><span class="department-desc">Задачи дня, звонки и мотивация</span><span class="department-arrow">Открыть отдел →</span>
+      </button>
+      <button class="department-tile clients-tile" data-open-dept="clients" type="button">
+        <span class="department-icon">👥</span><span class="department-title">Клиенты</span><span class="department-desc">База оптовиков и следующие контакты</span><span class="department-arrow">Открыть отдел →</span>
+      </button>
+      <button class="department-tile sales-tile" data-open-dept="sales" type="button">
+        <span class="department-icon">🛒</span><span class="department-title">Отдел продаж</span><span class="department-desc">KPI, заказы и рабочие операции</span><span class="department-arrow">Открыть отдел →</span>
+      </button>
+      <button class="department-tile finance-tile" data-open-dept="finance" type="button">
+        <span class="department-icon">₽</span><span class="department-title">Бухгалтерия</span><span class="department-desc">Финансы и потребность в оборотных деньгах</span><span class="department-arrow">Открыть отдел →</span>
+      </button>
     </div>
-    <div class="card" style="margin-top:12px;border-color:#33445d">
-      <div class="row" style="align-items:flex-start"><div><div class="pill">СЛЕДУЮЩИЙ ШАГ</div><h2 id="coachTitle" style="margin-top:10px">Этап 1. Связь с оптовыми клиентами</h2></div><span class="pill" id="coachStep">ШАГ 1 ИЗ 5</span></div>
-      <p id="coachText" style="line-height:1.6">Свяжись с 10 оптовиками. Узнай, какие модели им нужны, сколько телефонов готовы купить и когда планируют заказ.</p>
-      <div class="notice" id="coachTip">Совет: записывай конкретную модель, память, состояние и желаемую цену — так проще подготовить точное предложение.</div>
-      <div class="progress"><div id="coachProgress" style="width:0%"></div></div>
-      <div class="btnrow"><button class="primary" id="completeStepBtn">Этап выполнен → следующий</button><button id="showTasksBtn">Открыть все задачи</button></div>
-      <div class="notice" id="coachFeedback" style="margin-top:10px">Помощник подскажет следующий этап после отметки о выполнении.</div>
-    </div>
-    <div class="two">
-      <div class="card"><div class="row"><h2>План на первые 90 дней</h2><span class="pill">13 недель</span></div><div id="milestones"></div></div>
-      <div class="card"><h2>Фокус собственника сегодня</h2><div class="task"><span>①</span><div><b>Продажи</b><small>Проверь звонки, предложения и закрытые заказы</small></div></div><div class="task"><span>②</span><div><b>Товар</b><small>Сверь подтверждённые заявки с наличием</small></div></div><div class="task"><span>③</span><div><b>Деньги</b><small>Определи сумму для следующей закупки</small></div></div><div class="notice">Важно: валовая прибыль не равна чистой прибыли. Учитывай аренду, зарплаты, доставку, налоги, возвраты и прочие расходы.</div></div>
-    </div>
+    <div class="department-home-footer">AIS.STORE · Фокус на одной работе за раз</div>
   </section>
 
   <section id="tasks" class="hidden">
@@ -265,6 +318,7 @@ $("startDayBtn").onclick=()=>{document.querySelector('[data-tab="tasks"]').click
 $("showTasksBtn").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
 $("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex++;localStorage.setItem("aisCoachStep",String(coachIndex));renderCoach();$("coachFeedback").textContent="Отлично! Прочитай следующий этап и выполни его.";}else{$("coachProgress").style.width="100%";$("coachFeedback").textContent="Рабочий день завершён. Запиши KPI и подготовь план на завтра.";localStorage.setItem("aisCoachStep","0");coachIndex=0;}};
 $("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
+document.querySelectorAll('[data-open-dept]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.openDept}"]`).click()));
 renderHome();renderTasks();renderClients();renderSales();initFinance();renderCoach();showDailyWelcome();
 const splash=$("motivationSplash");
 function closeSplash(){if(!splash)return;splash.classList.add("dismissed");window.setTimeout(()=>splash.remove(),500)}
