@@ -172,9 +172,23 @@ if ('serviceWorker' in navigator) {
     <div><div class="splash-crown">♛</div><div class="splash-brand"><span>AIS.</span>STORE</div></div>
     <div class="splash-goal"><div class="small">МЫ СТРОИМ БОЛЬШОЙ БИЗНЕС</div><div class="big">500 телефонов<br>в неделю</div><div class="splash-tagline">Дисциплина. Команда. Результат.</div></div>
     <div class="splash-pill">STORE MANAGER</div>
-    <button type="button" class="splash-skip" id="skipSplash" onclick="(function(){var s=document.getElementById('motivationSplash');if(s){s.classList.add('dismissed');setTimeout(function(){s.remove();},500);}})()">Перейти к работе →</button>
+    <button type="button" class="splash-skip" id="skipSplash">Перейти к работе →</button>
   </div>
 </div>
+<script>
+/* Keep the motivation screen dismissible even if another app feature has a runtime error. */
+(function(){
+  const splash = document.getElementById('motivationSplash');
+  const button = document.getElementById('skipSplash');
+  function closeSplash(){
+    if(!splash) return;
+    splash.classList.add('dismissed');
+    window.setTimeout(()=>{ if(splash.isConnected) splash.remove(); }, 500);
+  }
+  if(button) button.addEventListener('click', closeSplash);
+  window.setTimeout(closeSplash, 3200);
+})();
+</script>
 <div class="app">
   <header class="top">
     <div><div class="brand">Ais<span>.Store</span> <span style="color:#fff;font-size:12px;font-weight:500">OWNER</span></div><div class="sub">OWNER CONTROL CENTER · ТВОЙ ЦИФРОВОЙ ПОМОЩНИК</div></div>
@@ -323,10 +337,7 @@ $("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот
 document.querySelectorAll('[data-open-dept]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.openDept}"]`).click()));
 $("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
 renderHome();renderTasks();renderClients();renderSales();initFinance();renderCoach();showDailyWelcome();
-const splash=$("motivationSplash");
-function closeSplash(){if(!splash)return;splash.classList.add("dismissed");window.setTimeout(()=>splash.remove(),500)}
-$("skipSplash").addEventListener("click",closeSplash);
-window.setTimeout(closeSplash,3200);
+
 </script>
 </body>
 </html>
