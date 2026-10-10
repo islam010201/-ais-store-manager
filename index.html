@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="Ais.Store Manager — панель собственника для контроля оптовых продаж телефонов.">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<title>Ais.Store — Панель собственника</title>
+<style>
+:root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--text:#f4f7fb;--muted:#9aabc3;--blue:#4b8cff;--green:#35d39a;--line:#263650;--amber:#ffbf5b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111e,#111d31);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.brand{font-weight:800;font-size:22px;letter-spacing:.2px}.brand span{color:var(--blue)}.sub{color:var(--muted);font-size:12px;margin-top:4px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px}.tab,button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 13px;border-radius:12px;cursor:pointer;font-weight:650}.tab.active,button.primary{background:var(--blue);border-color:var(--blue);color:white}
+h1{font-size:25px;margin:8px 0}h2{font-size:18px;margin:0 0 13px}h3{font-size:15px;margin:0 0 8px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.card{background:rgba(18,28,46,.96);border:1px solid var(--line);border-radius:18px;padding:16px;min-width:0}.kpi{font-size:26px;font-weight:800;margin:8px 0}.kpi small{font-size:13px;color:var(--muted);font-weight:500}.progress{height:8px;background:#273750;border-radius:10px;overflow:hidden;margin:12px 0}.progress div{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));width:0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.task{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}.task input{width:18px;height:18px;accent-color:var(--green);margin-top:2px}.task label{flex:1;cursor:pointer}.task.done label{text-decoration:line-through;color:var(--muted)}.task small{display:block;color:var(--muted);margin-top:4px}
+input,select,textarea{width:100%;padding:11px 12px;background:#0d1728;border:1px solid var(--line);border-radius:10px;color:var(--text);font:inherit;margin:5px 0 11px}label.field{display:block;color:var(--muted);font-size:12px;margin-top:5px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.pill{font-size:12px;border-radius:999px;background:#183d39;color:#76f0c3;padding:5px 8px}.listitem{padding:12px 0;border-bottom:1px solid var(--line)}.listitem:last-child{border:0}.barline{height:7px;background:#263650;border-radius:10px;overflow:hidden;margin-top:8px}.barline div{height:100%;background:var(--blue)}.hidden{display:none!important}.notice{font-size:12px;color:var(--muted);line-height:1.5}.empty{color:var(--muted);padding:15px 0}.danger{background:#482533;border-color:#713449}.mini{padding:7px 9px;font-size:12px}.footer{color:var(--muted);font-size:11px;text-align:center;padding:20px}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.app{padding:12px}.kpi{font-size:23px}.top{align-items:flex-start}.formgrid{grid-template-columns:1fr}}
+</style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker registration failed:', err)));
+}
+</script>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div><div class="brand">Ais<span>.Store</span> <span style="color:#fff;font-size:12px;font-weight:500">OWNER</span></div><div class="sub">Панель собственника · оптовые продажи телефонов</div></div>
+    <button id="exportBtn">Экспорт данных</button>
+  </header>
+  <nav>
+    <button class="tab active" data-tab="home">Главная</button>
+    <button class="tab" data-tab="tasks">Задачи</button>
+    <button class="tab" data-tab="clients">Клиенты</button>
+    <button class="tab" data-tab="sales">Продажи и KPI</button>
+    <button class="tab" data-tab="finance">Деньги</button>
+  </nav>
+
+  <section id="home">
+    <h1>Цель: 500 телефонов в неделю</h1>
+    <p class="muted">Контролируй ежедневные действия, повторные заказы и деньги на следующую закупку.</p>
+    <div class="grid">
+      <div class="card"><div class="muted">Продано за неделю</div><div class="kpi" id="weeklySales">75 <small>шт.</small></div><div class="muted">Цель: 500 шт.</div><div class="progress"><div id="salesProgress"></div></div><div class="notice" id="salesPercent">15% недельной цели</div></div>
+      <div class="card"><div class="muted">Активные клиенты</div><div class="kpi" id="activeClients">20 <small>/ 300</small></div><div class="notice">Цель для масштаба: 100 активных оптовиков</div></div>
+      <div class="card"><div class="muted">Валовая прибыль</div><div class="kpi" id="grossProfit">$1,125</div><div class="notice">Расчёт по продажам и прибыли на телефон</div></div>
+      <div class="card"><div class="muted">Задачи на сегодня</div><div class="kpi" id="taskCount">0/6</div><div class="notice">Отметь выполненное во вкладке «Задачи»</div></div>
+    </div>
+    <div class="two">
+      <div class="card"><div class="row"><h2>План на первые 90 дней</h2><span class="pill">13 недель</span></div><div id="milestones"></div></div>
+      <div class="card"><h2>Фокус собственника сегодня</h2><div class="task"><span>①</span><div><b>Продажи</b><small>Проверь звонки, предложения и закрытые заказы</small></div></div><div class="task"><span>②</span><div><b>Товар</b><small>Сверь подтверждённые заявки с наличием</small></div></div><div class="task"><span>③</span><div><b>Деньги</b><small>Определи сумму для следующей закупки</small></div></div><div class="notice">Важно: валовая прибыль не равна чистой прибыли. Учитывай аренду, зарплаты, доставку, налоги, возвраты и прочие расходы.</div></div>
+    </div>
+  </section>
+
+  <section id="tasks" class="hidden">
+    <h1>Ежедневные задачи</h1><p class="muted">Отмечай выполнение. Список сохраняется на этом устройстве.</p>
+    <div class="card"><div class="row"><h2 id="todayTitle">План на сегодня</h2><button class="mini" id="resetTasks">Сбросить на новый день</button></div><div id="taskList"></div><div class="progress"><div id="taskProgress"></div></div><div class="notice" id="taskSummary"></div></div>
+    <div class="card" style="margin-top:12px"><h2>Добавить задачу</h2><div class="formgrid"><div><label class="field">Задача</label><input id="newTask" placeholder="Например, обзвонить 15 торговцев"></div><div><label class="field">Норма / заметка</label><input id="newTaskNote" placeholder="До 14:00"></div></div><button class="primary" id="addTask">Добавить задачу</button></div>
+  </section>
+
+  <section id="clients" class="hidden">
+    <h1>База оптовых клиентов</h1><p class="muted">Начни с наиболее перспективных торговцев. Не вноси конфиденциальные данные, которыми не хочешь делиться на этом устройстве.</p>
+    <div class="grid">
+      <div class="card"><div class="muted">Всего в базе</div><div class="kpi" id="clientTotal">0</div></div>
+      <div class="card"><div class="muted">Активные</div><div class="kpi" id="clientActive">0</div></div>
+      <div class="card"><div class="muted">Новые / на связи</div><div class="kpi" id="clientNew">0</div></div>
+      <div class="card"><div class="muted">Цель активных</div><div class="kpi">100</div></div>
+    </div>
+    <div class="two"><div class="card"><h2>Добавить клиента</h2><div class="formgrid"><div><label class="field">Магазин / имя</label><input id="cName" placeholder="Название магазина"></div><div><label class="field">Регион</label><input id="cRegion" placeholder="Например, Ош"></div><div><label class="field">Телефон (необязательно)</label><input id="cPhone" placeholder="+996 ..."></div><div><label class="field">Категория</label><select id="cType"><option>Крупный</option><option selected>Средний</option><option>Мелкий</option></select></div><div><label class="field">Средний заказ, шт.</label><input id="cOrder" type="number" min="0" value="5"></div><div><label class="field">Статус</label><select id="cStatus"><option>Новый</option><option>На связи</option><option>Активный</option><option>Неактивный</option></select></div></div><button class="primary" id="addClient">Сохранить клиента</button></div>
+    <div class="card"><h2>Поиск и фильтр</h2><input id="clientSearch" placeholder="Поиск по магазину или региону"><select id="clientFilter"><option>Все</option><option>Активный</option><option>Новый</option><option>На связи</option><option>Неактивный</option></select><div class="notice">Добавленные данные сохраняются локально в браузере. Экспортируй резервную копию регулярно.</div></div></div>
+    <div class="card" style="margin-top:12px"><h2>Клиенты</h2><div id="clientList"></div></div>
+  </section>
+
+  <section id="sales" class="hidden">
+    <h1>Продажи и KPI</h1><p class="muted">Внеси итог недели. Эти цифры обновляют главную панель.</p>
+    <div class="card"><h2>Итоги текущей недели</h2><div class="formgrid"><div><label class="field">Продано телефонов, шт.</label><input id="sUnits" type="number" min="0" value="75"></div><div><label class="field">Активные покупатели</label><input id="sActive" type="number" min="0" value="20"></div><div><label class="field">Валовая прибыль на телефон, $</label><input id="sMargin" type="number" min="0" step=".5" value="15"></div><div><label class="field">Новые / возвращённые клиенты</label><input id="sNew" type="number" min="0" value="3"></div><div><label class="field">Целевые контакты за неделю</label><input id="sContacts" type="number" min="0" value="180"></div><div><label class="field">Предложения отправлены</label><input id="sOffers" type="number" min="0" value="40"></div><div><label class="field">Повторные касания</label><input id="sFollowups" type="number" min="0" value="40"></div><div><label class="field">Заказы получены</label><input id="sOrders" type="number" min="0" value="15"></div></div><button class="primary" id="saveSales">Сохранить KPI</button></div>
+    <div class="grid" style="margin-top:12px"><div class="card"><div class="muted">Контакты</div><div class="kpi" id="kContacts">180</div><div class="notice">Ориентир: 150–210 в неделю</div></div><div class="card"><div class="muted">Предложения</div><div class="kpi" id="kOffers">40</div><div class="notice">Ориентир: 30–50 в неделю</div></div><div class="card"><div class="muted">Заказы</div><div class="kpi" id="kOrders">15</div><div class="notice">Считай реальные заказы, не обещания</div></div><div class="card"><div class="muted">Новые / возвращённые</div><div class="kpi" id="kNew">3</div><div class="notice">Ориентир: 2–4 в неделю</div></div></div>
+  </section>
+
+  <section id="finance" class="hidden">
+    <h1>Оборотные деньги</h1><p class="muted">Упрощённый калькулятор потребности в капитале. Заполняй фактические значения.</p>
+    <div class="two"><div class="card"><h2>Параметры</h2><label class="field">Продажи, телефонов в неделю</label><input id="fUnits" type="number" value="75" min="0"><label class="field">Себестоимость одного телефона, $</label><input id="fCost" type="number" value="400" min="0"><label class="field">Денежный цикл, дней</label><input id="fDays" type="number" value="14" min="0"><label class="field">Доступная отсрочка / предоплаты, $</label><input id="fCredit" type="number" value="0" min="0"><label class="field">Свободные оборотные деньги, $</label><input id="fCash" type="number" value="0" min="0"><button class="primary" id="calcFinance">Рассчитать</button></div>
+    <div class="card"><h2>Результат</h2><div class="muted">Ориентировочная потребность в капитале</div><div class="kpi" id="capitalNeed">$60,000</div><div class="muted">Оценка дефицита средств</div><div class="kpi" id="capitalGap">$60,000</div><div class="notice">Формула: недельные продажи × себестоимость × дни денежного цикла ÷ 7. Затем вычитаются доступные отсрочки / предоплаты. Это приближение, не бухгалтерский баланс и не финансовая рекомендация.</div></div></div>
+  </section>
+  <div class="footer">Ais.Store · MVP для личного контроля · Данные хранятся в браузере на этом устройстве. Экспортируй резервную копию.</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const defaultTasks=[
+ {title:"Связаться с 25–35 торговцами",note:"Целевые звонки и персональные сообщения"},
+ {title:"Отправить актуальный оптовый прайс",note:"Учитывать модели, состояние, память и наличие"},
+ {title:"Сделать 10 повторных касаний",note:"Вернуться к тем, кто получил предложение"},
+ {title:"Закрыть и подтвердить заказы",note:"Фиксировать количество и условия"},
+ {title:"Проверить товар и отгрузки",note:"Сверить заявки с реальным наличием"},
+ {title:"Подвести итоги и проверить деньги",note:"Продажи, прибыль, остатки, сумма на закупку"}
+];
+const defaultState={tasks:defaultTasks.map(t=>({...t,done:false})),clients:[],sales:{units:75,active:20,margin:15,new:3,contacts:180,offers:40,followups:40,orders:15},finance:{units:75,cost:400,days:14,credit:0,cash:0}};
+let state;
+try{state=JSON.parse(localStorage.getItem("aisStoreMVP")||"null")}catch(e){state=null}
+if(!state)state=structuredClone(defaultState);
+function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderHome(){
+ const s=state.sales; $("weeklySales").innerHTML=`${s.units} <small>шт.</small>`;$("salesProgress").style.width=Math.min(100,s.units/500*100)+"%";$("salesPercent").textContent=`${Math.round(s.units/500*100)}% недельной цели`;
+ $("activeClients").innerHTML=`${s.active} <small>/ 300</small>`;$("grossProfit").textContent="$"+Math.round(s.units*s.margin).toLocaleString("en-US");
+ const done=state.tasks.filter(t=>t.done).length;$("taskCount").textContent=`${done}/${state.tasks.length}`;
+ const ms=[["Неделя 1","75–80 шт."],["Неделя 2","80 шт."],["Неделя 3","85 шт."],["Неделя 4","90 шт."],["Недели 5–8","95–110 шт."],["Недели 9–13","115–140 шт."]];
+ $("milestones").innerHTML=ms.map((m,i)=>`<div class="listitem"><div class="row"><b>${m[0]}</b><span class="pill">${m[1]}</span></div><div class="barline"><div style="width:${[15,16,17,18,22,28][i]}%"></div></div></div>`).join("");
+}
+function renderTasks(){
+ $("todayTitle").textContent="План на "+new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
+ $("taskList").innerHTML=state.tasks.map((t,i)=>`<div class="task ${t.done?"done":""}"><input type="checkbox" data-task="${i}" ${t.done?"checked":""}><label><b>${esc(t.title)}</b><small>${esc(t.note||"")}</small></label><button class="mini danger" data-del-task="${i}">Удалить</button></div>`).join("");
+ const d=state.tasks.filter(t=>t.done).length,p=state.tasks.length?d/state.tasks.length*100:0;$("taskProgress").style.width=p+"%";$("taskSummary").textContent=`Выполнено ${d} из ${state.tasks.length} задач (${Math.round(p)}%).`;
+ document.querySelectorAll("[data-task]").forEach(el=>el.onchange=()=>{state.tasks[+el.dataset.task].done=el.checked;save()});
+ document.querySelectorAll("[data-del-task]").forEach(el=>el.onclick=()=>{state.tasks.splice(+el.dataset.delTask,1);save()});
+}
+function renderClients(){
+ const active=state.clients.filter(c=>c.status==="Активный").length;$("clientTotal").textContent=state.clients.length;$("clientActive").textContent=active;$("clientNew").textContent=state.clients.filter(c=>["Новый","На связи"].includes(c.status)).length;
+ const q=($("clientSearch")?.value||"").toLowerCase(),f=$("clientFilter")?.value||"Все";
+ const list=state.clients.filter(c=>(f==="Все"||c.status===f)&&`${c.name} ${c.region}`.toLowerCase().includes(q));
+ $("clientList").innerHTML=list.length?list.map(c=>`<div class="listitem"><div class="row"><div><b>${esc(c.name)}</b> <span class="pill">${esc(c.status)}</span><div class="muted" style="font-size:12px;margin-top:5px">${esc(c.region||"Регион не указан")} · ${esc(c.type)} · средний заказ ${c.order} шт.</div><div class="muted" style="font-size:12px">${esc(c.phone||"")}</div></div><div><select data-status="${c.id}" aria-label="Статус клиента">${["Новый","На связи","Активный","Неактивный"].map(x=>`<option ${x===c.status?"selected":""}>${x}</option>`).join("")}</select><button class="mini danger" data-del-client="${c.id}">Удалить</button></div></div></div>`).join(""):'<div class="empty">Пока нет клиентов. Добавь первых торговцев выше.</div>';
+ document.querySelectorAll("[data-status]").forEach(el=>el.onchange=()=>{let c=state.clients.find(x=>x.id===el.dataset.status);if(c)c.status=el.value;save()});
+ document.querySelectorAll("[data-del-client]").forEach(el=>el.onclick=()=>{state.clients=state.clients.filter(c=>c.id!==el.dataset.delClient);save()});
+}
+function renderSales(){
+ const s=state.sales;const map={sUnits:"units",sActive:"active",sMargin:"margin",sNew:"new",sContacts:"contacts",sOffers:"offers",sFollowups:"followups",sOrders:"orders"};
+ Object.entries(map).forEach(([id,k])=>{if($(id)&&document.activeElement!==$(id))$(id).value=s[k]});
+ $("kContacts").textContent=s.contacts;$("kOffers").textContent=s.offers;$("kOrders").textContent=s.orders;$("kNew").textContent=s.new;
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));["home","tasks","clients","sales","finance"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab));});
+$("addTask").onclick=()=>{const title=$("newTask").value.trim();if(!title)return;state.tasks.push({title,note:$("newTaskNote").value.trim(),done:false});$("newTask").value="";$("newTaskNote").value="";save()};
+$("resetTasks").onclick=()=>{if(confirm("Снять все отметки выполнения?")){state.tasks.forEach(t=>t.done=false);save()}};
+$("addClient").onclick=()=>{const name=$("cName").value.trim();if(!name){alert("Укажи название магазина или имя клиента.");return}state.clients.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),name,region:$("cRegion").value.trim(),phone:$("cPhone").value.trim(),type:$("cType").value,order:Math.max(0,+$("cOrder").value||0),status:$("cStatus").value});["cName","cRegion","cPhone"].forEach(id=>$(id).value="");save()};
+$("clientSearch").oninput=renderClients;$("clientFilter").onchange=renderClients;
+$("saveSales").onclick=()=>{state.sales={units:+$("sUnits").value||0,active:+$("sActive").value||0,margin:+$("sMargin").value||0,new:+$("sNew").value||0,contacts:+$("sContacts").value||0,offers:+$("sOffers").value||0,followups:+$("sFollowups").value||0,orders:+$("sOrders").value||0};save();alert("KPI сохранены.")};
+function calcFinance(){const f={units:+$("fUnits").value||0,cost:+$("fCost").value||0,days:+$("fDays").value||0,credit:+$("fCredit").value||0,cash:+$("fCash").value||0};state.finance=f;const need=Math.max(0,f.units*f.cost*f.days/7-f.credit);$("capitalNeed").textContent="$"+Math.round(need).toLocaleString("en-US");$("capitalGap").textContent="$"+Math.round(Math.max(0,need-f.cash)).toLocaleString("en-US");localStorage.setItem("aisStoreMVP",JSON.stringify(state))}
+$("calcFinance").onclick=calcFinance;
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ais-store-backup.json";a.click();URL.revokeObjectURL(url)};
+function initFinance(){const f=state.finance||defaultState.finance;Object.entries({fUnits:"units",fCost:"cost",fDays:"days",fCredit:"credit",fCash:"cash"}).forEach(([id,k])=>$(id).value=f[k]);calcFinance()}
+renderHome();renderTasks();renderClients();renderSales();initFinance();
+</script>
+</body>
+</html>
