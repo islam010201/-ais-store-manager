@@ -7,7 +7,7 @@
 <meta name="description" content="Ais.Store Manager — панель собственника для контроля оптовых продаж телефонов.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>AIS.Store Manager 3.3 — Мотивация AIS.store</title>
+<title>AIS.Store Manager 3.4 — Интерфейсы отделов</title>
 <style>
 :root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--text:#f4f7fb;--muted:#9aabc3;--blue:#d8ff3e;--green:#9bdc28;--line:#263650;--amber:#ffbf5b}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111e,#111d31);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -62,6 +62,40 @@ input,select,textarea{background:#fff;color:#20231d;border-color:#d8ddd2}
 #motivationSplash .splash-pill{border:1px solid #d9ff45;border-radius:999px;padding:10px 24px;color:#d9ff45;letter-spacing:3px;font-size:11px;font-weight:850;background:rgba(0,0,0,.35)}
 #motivationSplash .splash-skip{border:1px solid rgba(255,255,255,.55);background:rgba(0,0,0,.38);color:#fff;border-radius:999px;padding:10px 18px;min-height:42px;font-weight:700}
 @media(min-width:700px){#motivationSplash .splash-content{max-width:650px;margin:auto}#motivationSplash .splash-photo{object-position:center 42%}}
+
+/* AIS.Store Manager 3.4 — clearer department workspaces */
+nav{background:#20231d;padding:8px;border-radius:16px;box-shadow:0 5px 18px rgba(15,20,10,.12)}
+nav .tab{flex:1;min-width:0;font-size:13px;font-weight:850;min-height:48px;background:#30352c;border-color:#3b4234;color:#f4f6ef;border-radius:11px}
+nav .tab.active{background:#d9ff45;border-color:#d9ff45;color:#20231d;box-shadow:0 2px 0 #a8c92c}
+#home .welcome{background:linear-gradient(135deg,#171a15,#292e24)!important;border:1px solid #d9ff45!important;box-shadow:0 8px 25px rgba(20,25,12,.18)}
+#home .grid .card{border-top:3px solid #d9ff45}
+#tasks{background:linear-gradient(180deg,#20231d 0,#20231d 180px,#f3f4f0 180px);padding:14px;border-radius:18px}
+#tasks>h1{color:#fff;margin-top:4px}#tasks>p{color:#d9dfd1;margin-bottom:18px}
+#tasks .card{border-color:#e1e4dc;box-shadow:0 5px 18px rgba(0,0,0,.06)}
+#tasks .card:first-of-type{border-top:4px solid #d9ff45}
+#tasks #todayTitle{font-size:20px}
+#tasks #taskProgress{background:#d9ff45}
+#tasks .task{border-bottom-color:#e7e9e3}
+#tasks .task input{accent-color:#789900;width:22px;height:22px}
+#tasks .task label b{color:#20231d}
+#tasks .pill{background:#eff8d8;color:#3d510e}
+#clients>h1{border-left:5px solid #d9ff45;padding-left:12px}
+#clients .card{box-shadow:0 4px 15px rgba(20,25,12,.04)}
+#sales{background:#f0f2ec;border:1px solid #dce1d4;box-shadow:0 5px 20px rgba(20,25,12,.04)}
+#sales .sales-heading{background:linear-gradient(120deg,#171a15,#30382a);border:1px solid #39432d;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+#sales .sales-quick-card{transition:transform .15s ease;border-top:3px solid #d9ff45}
+#sales .sales-quick-card b{background:#d9ff45}
+#sales .card{border-top:2px solid #d9ff45}
+#finance{background:#e8ece5;padding:14px;border:1px solid #d5ddd1;border-radius:18px}
+#finance>h1{background:#24372a;color:#fff;padding:18px;border-radius:14px;margin:0 0 10px}
+#finance>p{background:#fff;padding:12px 14px;border-radius:10px;border-left:4px solid #789b4a;margin:0 0 14px;color:#596157}
+#finance .card{border-top:3px solid #6d8c50;box-shadow:0 4px 14px rgba(20,25,12,.04)}
+#finance .kpi{color:#263d29}
+#finance button.primary{background:#263d29;border-color:#263d29;color:#fff}
+#finance input{border-color:#cbd5c5}
+#motivationSplash .splash-skip{font-size:14px}
+@media(max-width:760px){nav{grid-template-columns:repeat(2,minmax(0,1fr));display:grid}nav .tab{font-size:12px;padding:10px 7px}#tasks,#finance{padding:10px}#sales{padding:10px}}
+
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -86,10 +120,10 @@ if ('serviceWorker' in navigator) {
   </header>
   <nav>
     <button class="tab active" data-tab="home">Главная</button>
-    <button class="tab" data-tab="tasks">Задачи</button>
+    <button class="tab" data-tab="tasks">🎯 Менеджер</button>
     <button class="tab" data-tab="clients">Клиенты</button>
     <button class="tab" data-tab="sales">🛒 Отдел продаж</button>
-    <button class="tab" data-tab="finance">Деньги</button>
+    <button class="tab" data-tab="finance">📊 Бухгалтерия</button>
   </nav>
 
   <section id="home">
