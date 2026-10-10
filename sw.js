@@ -1,17 +1,5 @@
-const CACHE_NAME = 'ais-store-manager-v2-0-1';
-const APP_FILES = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
-  self.skipWaiting();
-});
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))));
-  self.clients.claim();
-});
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-    if (response && response.ok) { const copy = response.clone(); caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)); }
-    return response;
-  }).catch(() => caches.match('./index.html'))));
-});
+const CACHE='ais-store-manager-v3-3';
+const ASSETS=['./','./index.html','./manifest.webmanifest','./team-photo.jpg','./icons/icon-192.png','./icons/icon-512.png'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('ais-store-manager-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{if(event.request.method==='GET')event.respondWith(caches.match(event.request).then(response=>response||fetch(event.request).then(result=>{const copy=result.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return result}).catch(()=>caches.match('./index.html'))));});

@@ -7,7 +7,7 @@
 <meta name="description" content="Ais.Store Manager — панель собственника для контроля оптовых продаж телефонов.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>AIS.Store Manager 3.0 — Помощник собственника</title>
+<title>AIS.Store Manager 3.3 — Мотивация AIS.store</title>
 <style>
 :root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--text:#f4f7fb;--muted:#9aabc3;--blue:#d8ff3e;--green:#9bdc28;--line:#263650;--amber:#ffbf5b}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111e,#111d31);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -24,6 +24,44 @@ button.primary,.tab.active{color:#111827;font-weight:800}
 @media(max-width:760px){nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tab{width:100%;text-align:center}.top{flex-direction:column;align-items:stretch}.top .btnrow button{flex:1}.welcome{padding:18px}.card{padding:15px}}
 @media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.app{padding:12px}.kpi{font-size:23px}.top{align-items:flex-start}.formgrid{grid-template-columns:1fr}}
 .listitem .btnrow{margin-top:8px}.listitem select{min-width:110px;font-size:12px}.listitem button{margin:3px 3px 0 0}
+
+/* AIS.Store Manager 3.2 — department-oriented visual refresh; existing data logic preserved */
+:root{--bg:#f3f4f0;--panel:#ffffff;--panel2:#20231d;--text:#20231d;--muted:#666b62;--line:#dfe2da;--blue:#d9ff45;--green:#b6e83c;--amber:#ffbf5b}
+body{background:#f3f4f0;color:#20231d}
+.app{max-width:1080px;padding:14px}
+.brand{letter-spacing:.7px}.brand span{color:#799d00!important}.sub{color:#686e63}
+.card{background:#fff;border:1px solid #e0e3dc;box-shadow:0 4px 16px rgba(22,28,15,.05);border-radius:16px;color:#20231d}
+.muted,.notice,.footer,label.field{color:#62675f}
+nav{gap:8px} .tab,button{background:#fff;color:#20231d;border:1px solid #d9ddd3;border-radius:12px}
+.tab.active,button.primary{background:#d9ff45;border-color:#d9ff45;color:#20231d}
+input,select,textarea{background:#fff;color:#20231d;border-color:#d8ddd2}
+.progress,.barline{background:#e4e8de}.progress div,.barline div{background:#b6e83c}
+.pill{background:#edf6d5;color:#3b5010}
+.welcome{background:#20231d!important;color:#fff}.welcome .muted{color:#e2e5dc}.welcome .pill{background:#343c29!important;color:#d9ff45!important}
+#sales{background:#f3f4f0;border-radius:18px;padding:14px;border:1px solid #e0e3dc}
+.sales-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#20231d;color:#fff;border-radius:16px;padding:20px;margin-bottom:12px}
+.sales-heading h1{color:#fff;margin:7px 0}.sales-heading .muted{color:#d4d9ce}.sales-eyebrow{color:#d9ff45;font-size:11px;font-weight:900;letter-spacing:1.5px}.sales-mark{width:58px;height:58px;border-radius:15px;background:#d9ff45;color:#20231d;display:grid;place-items:center;font-weight:950;font-size:20px;flex-shrink:0}.sales-mark span{color:#718e00}
+.sales-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:10px 0 14px}.sales-quick-card{background:#fff;border:1px solid #e0e3dc;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px;min-height:110px}.sales-quick-card b{display:grid;place-items:center;background:#d9ff45;color:#20231d;border-radius:8px;width:30px;height:30px;font-size:12px}.sales-quick-card span{font-weight:850;font-size:14px}.sales-quick-card small{font-size:11px;line-height:1.4;color:#62675f}.sales-note{border-left:4px solid #d9ff45;padding:10px 12px;background:#fff;border-radius:0 10px 10px 0;color:#62675f;font-size:12px;line-height:1.5}
+#sales h2{color:#20231d}#sales .kpi{color:#20231d}#sales .card{box-shadow:none}
+@media(max-width:760px){.app{padding:10px}.sales-heading{padding:16px}.sales-quick{grid-template-columns:repeat(2,minmax(0,1fr))}.sales-quick-card{min-height:100px}.top{flex-direction:row;align-items:center}.top .btnrow{flex-wrap:wrap}.top .btnrow button{padding:9px;font-size:12px}.brand{font-size:21px}}
+
+
+/* AIS.Store Manager 3.3 — motivational startup screen */
+#motivationSplash{position:fixed;inset:0;z-index:99999;background:#080a07;color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .45s ease,visibility .45s ease;padding:0;}
+#motivationSplash.dismissed{opacity:0;visibility:hidden;pointer-events:none}
+#motivationSplash .splash-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;opacity:.76}
+#motivationSplash:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.06) 32%,rgba(0,0,0,.14) 48%,rgba(0,0,0,.92) 78%,#050605 100%)}
+#motivationSplash .splash-content{position:relative;z-index:1;width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 32px) 22px calc(env(safe-area-inset-bottom,0px) + 26px);gap:16px}
+#motivationSplash .splash-brand{font-weight:950;letter-spacing:2px;font-size:clamp(27px,7vw,42px);color:#fff;text-shadow:0 2px 18px #000}
+#motivationSplash .splash-brand span{color:#d9ff45}
+#motivationSplash .splash-crown{font-size:25px;color:#d9ff45;margin-bottom:4px}
+#motivationSplash .splash-goal{margin-top:auto;margin-bottom:10px;text-shadow:0 3px 20px #000}
+#motivationSplash .splash-goal .small{font-size:clamp(18px,5vw,25px);font-weight:850;letter-spacing:1px}
+#motivationSplash .splash-goal .big{font-size:clamp(32px,9vw,54px);line-height:1.02;font-weight:950;color:#d9ff45;letter-spacing:-1px;margin:7px 0;text-transform:uppercase}
+#motivationSplash .splash-tagline{font-size:15px;line-height:1.5;color:#f3f4ef;max-width:330px}
+#motivationSplash .splash-pill{border:1px solid #d9ff45;border-radius:999px;padding:10px 24px;color:#d9ff45;letter-spacing:3px;font-size:11px;font-weight:850;background:rgba(0,0,0,.35)}
+#motivationSplash .splash-skip{border:1px solid rgba(255,255,255,.55);background:rgba(0,0,0,.38);color:#fff;border-radius:999px;padding:10px 18px;min-height:42px;font-weight:700}
+@media(min-width:700px){#motivationSplash .splash-content{max-width:650px;margin:auto}#motivationSplash .splash-photo{object-position:center 42%}}
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -32,6 +70,15 @@ if ('serviceWorker' in navigator) {
 </script>
 </head>
 <body>
+<div id="motivationSplash" role="dialog" aria-label="Мотивационный экран AIS.store">
+  <img class="splash-photo" src="./team-photo.jpg" alt="Команда AIS.store" fetchpriority="high">
+  <div class="splash-content">
+    <div><div class="splash-crown">♛</div><div class="splash-brand"><span>AIS.</span>STORE</div></div>
+    <div class="splash-goal"><div class="small">МЫ СТРОИМ БОЛЬШОЙ БИЗНЕС</div><div class="big">500 телефонов<br>в неделю</div><div class="splash-tagline">Дисциплина. Команда. Результат.</div></div>
+    <div class="splash-pill">STORE MANAGER</div>
+    <button type="button" class="splash-skip" id="skipSplash">Перейти к работе →</button>
+  </div>
+</div>
 <div class="app">
   <header class="top">
     <div><div class="brand">Ais<span>.Store</span> <span style="color:#fff;font-size:12px;font-weight:500">OWNER</span></div><div class="sub">OWNER CONTROL CENTER · ТВОЙ ЦИФРОВОЙ ПОМОЩНИК</div></div>
@@ -41,7 +88,7 @@ if ('serviceWorker' in navigator) {
     <button class="tab active" data-tab="home">Главная</button>
     <button class="tab" data-tab="tasks">Задачи</button>
     <button class="tab" data-tab="clients">Клиенты</button>
-    <button class="tab" data-tab="sales">Продажи и KPI</button>
+    <button class="tab" data-tab="sales">🛒 Отдел продаж</button>
     <button class="tab" data-tab="finance">Деньги</button>
   </nav>
 
@@ -94,7 +141,7 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <section id="sales" class="hidden">
-    <h1>Продажи и KPI</h1><p class="muted">Внеси итог недели. Эти цифры обновляют главную панель.</p>
+    <div class="sales-heading"><div><div class="sales-eyebrow">AIS.STORE · WHOLESALE</div><h1>Отдел продаж</h1><p class="muted">Заказы, клиенты и результат — в одном рабочем месте.</p></div><div class="sales-mark">AIS<span>+</span></div></div><div class="sales-quick"><div class="sales-quick-card"><b>01</b><span>План продаж</span><small>Обновить KPI недели</small></div><div class="sales-quick-card"><b>02</b><span>Клиенты</span><small>Открыть базу покупателей</small></div><div class="sales-quick-card"><b>03</b><span>Наличие</span><small>Проверить товар перед обещанием</small></div><div class="sales-quick-card"><b>04</b><span>Возврат / ремонт</span><small>Зафиксировать проблему телефона</small></div></div><p class="sales-note">Пока это визуальная организация существующих функций: реальные складские операции, возвраты и ремонт будут добавлены отдельно.</p>
     <div class="card"><h2>Итоги текущей недели</h2><div class="formgrid"><div><label class="field">Продано телефонов, шт.</label><input id="sUnits" type="number" min="0" value="75"></div><div><label class="field">Активные покупатели</label><input id="sActive" type="number" min="0" value="20"></div><div><label class="field">Валовая прибыль на телефон, $</label><input id="sMargin" type="number" min="0" step=".5" value="15"></div><div><label class="field">Новые / возвращённые клиенты</label><input id="sNew" type="number" min="0" value="3"></div><div><label class="field">Целевые контакты за неделю</label><input id="sContacts" type="number" min="0" value="180"></div><div><label class="field">Предложения отправлены</label><input id="sOffers" type="number" min="0" value="40"></div><div><label class="field">Повторные касания</label><input id="sFollowups" type="number" min="0" value="40"></div><div><label class="field">Заказы получены</label><input id="sOrders" type="number" min="0" value="15"></div></div><button class="primary" id="saveSales">Сохранить KPI</button></div>
     <div class="grid" style="margin-top:12px"><div class="card"><div class="muted">Контакты</div><div class="kpi" id="kContacts">180</div><div class="notice">Ориентир: 150–210 в неделю</div></div><div class="card"><div class="muted">Предложения</div><div class="kpi" id="kOffers">40</div><div class="notice">Ориентир: 30–50 в неделю</div></div><div class="card"><div class="muted">Заказы</div><div class="kpi" id="kOrders">15</div><div class="notice">Считай реальные заказы, не обещания</div></div><div class="card"><div class="muted">Новые / возвращённые</div><div class="kpi" id="kNew">3</div><div class="notice">Ориентир: 2–4 в неделю</div></div></div>
   </section>
@@ -185,6 +232,10 @@ $("showTasksBtn").onclick=()=>document.querySelector('[data-tab="tasks"]').click
 $("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex++;localStorage.setItem("aisCoachStep",String(coachIndex));renderCoach();$("coachFeedback").textContent="Отлично! Прочитай следующий этап и выполни его.";}else{$("coachProgress").style.width="100%";$("coachFeedback").textContent="Рабочий день завершён. Запиши KPI и подготовь план на завтра.";localStorage.setItem("aisCoachStep","0");coachIndex=0;}};
 $("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
 renderHome();renderTasks();renderClients();renderSales();initFinance();renderCoach();showDailyWelcome();
+const splash=$("motivationSplash");
+function closeSplash(){if(!splash)return;splash.classList.add("dismissed");window.setTimeout(()=>splash.remove(),500)}
+$("skipSplash").addEventListener("click",closeSplash);
+window.setTimeout(closeSplash,3200);
 </script>
 </body>
 </html>
