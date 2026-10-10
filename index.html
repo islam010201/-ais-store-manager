@@ -155,6 +155,9 @@ nav .tab{letter-spacing:-.1px}
 #home.department-home~.footer{display:none}
 @media(max-width:420px){.department-home-heading{padding:18px}.department-launcher{gap:9px}.department-tile{padding:13px;min-height:174px}.department-title{font-size:16px}.department-desc{font-size:11px}}
 
+
+.home-ai-card{margin-top:16px;padding:18px;border-radius:18px;background:#20231d;color:#fff;border:1px solid #d9ff45;box-shadow:0 8px 22px rgba(20,25,12,.08)}
+.home-ai-head{display:flex;align-items:center;gap:12px}.home-ai-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#d9ff45;color:#20231d;font-size:25px;font-weight:900}.home-ai-head strong{display:block;color:#d9ff45;font-size:17px}.home-ai-head small{display:block;color:#d4d9ce;font-size:12px;margin-top:3px}.home-ai-card p{color:#eef0e9;font-size:14px;line-height:1.55;margin:14px 0}.home-ai-button{background:#d9ff45;color:#20231d;border:0;border-radius:12px;padding:12px 15px;font-weight:850;width:100%}
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -169,7 +172,7 @@ if ('serviceWorker' in navigator) {
     <div><div class="splash-crown">♛</div><div class="splash-brand"><span>AIS.</span>STORE</div></div>
     <div class="splash-goal"><div class="small">МЫ СТРОИМ БОЛЬШОЙ БИЗНЕС</div><div class="big">500 телефонов<br>в неделю</div><div class="splash-tagline">Дисциплина. Команда. Результат.</div></div>
     <div class="splash-pill">STORE MANAGER</div>
-    <button type="button" class="splash-skip" id="skipSplash">Перейти к работе →</button>
+    <button type="button" class="splash-skip" id="skipSplash" onclick="(function(){var s=document.getElementById('motivationSplash');if(s){s.classList.add('dismissed');setTimeout(function(){s.remove();},500);}})()">Перейти к работе →</button>
   </div>
 </div>
 <div class="app">
@@ -189,7 +192,7 @@ if ('serviceWorker' in navigator) {
     <div class="department-home-heading">
       <div class="sales-eyebrow">AIS.STORE · WORKSPACE</div>
       <h1>Выбери отдел</h1>
-      <p class="muted">Каждый экран — одна задача. Ничего лишнего.</p>
+      <p class="muted">Каждый экран — одна задача.</p>
     </div>
     <div class="department-launcher">
       <button class="department-tile manager-tile" data-open-dept="tasks" type="button">
@@ -199,13 +202,17 @@ if ('serviceWorker' in navigator) {
         <span class="department-icon">👥</span><span class="department-title">Клиенты</span><span class="department-desc">База оптовиков и следующие контакты</span><span class="department-arrow">Открыть отдел →</span>
       </button>
       <button class="department-tile sales-tile" data-open-dept="sales" type="button">
-        <span class="department-icon">🛒</span><span class="department-title">Отдел продаж</span><span class="department-desc">KPI, заказы и рабочие операции</span><span class="department-arrow">Открыть отдел →</span>
+        <span class="department-icon">🛒</span><span class="department-title">Отдел продаж</span><span class="department-desc">Заказы и рабочие операции</span><span class="department-arrow">Открыть отдел →</span>
       </button>
       <button class="department-tile finance-tile" data-open-dept="finance" type="button">
-        <span class="department-icon">₽</span><span class="department-title">Бухгалтерия</span><span class="department-desc">Финансы и потребность в оборотных деньгах</span><span class="department-arrow">Открыть отдел →</span>
+        <span class="department-icon">📊</span><span class="department-title">Бухгалтерия</span><span class="department-desc">Финансы и оборотные деньги</span><span class="department-arrow">Открыть отдел →</span>
       </button>
     </div>
-    <div class="department-home-footer">AIS.STORE · Фокус на одной работе за раз</div>
+    <div class="home-ai-card">
+      <div class="home-ai-head"><span class="home-ai-icon">✦</span><div><strong>ИИ-помощник AIS</strong><small>Планирование и подсказки владельцу</small></div></div>
+      <p>Помогу определить следующий шаг: связаться с оптовиками, подготовить предложение, проверить заказы или подвести итоги дня.</p>
+      <button class="home-ai-button" id="homeAiOpen" type="button">Открыть помощника →</button>
+    </div>
   </section>
 
   <section id="tasks" class="hidden">
@@ -269,13 +276,8 @@ try{coachIndex=Math.max(0,Math.min(coachSteps.length-1,Number(localStorage.getIt
 function renderCoach(){const s=coachSteps[coachIndex];if(!s)return;$("coachTitle").textContent=s.title;$("coachText").textContent=s.text;$("coachTip").textContent="Совет помощника: "+s.tip;$("coachStep").textContent=`ШАГ ${coachIndex+1} ИЗ ${coachSteps.length}`;$("coachProgress").style.width=((coachIndex)/coachSteps.length*100)+"%";$("completeStepBtn").textContent=coachIndex===coachSteps.length-1?"Завершить рабочий день ✓":"Этап выполнен → следующий";$("coachFeedback").textContent=coachIndex===0?"Начни с 10 оптовиков. После этапа переходи к предложению.":coachIndex===coachSteps.length-1?"После завершения подготовь план на завтра.":"Следующий шаг откроется после подтверждения выполнения.";}
 function showDailyWelcome(){const h=new Date().getHours();const greet=h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер";const el=$("dailyGreeting");if(el)el.textContent=greet+"! План на сегодня готов.";}
 
-function renderHome(){
- const s=state.sales; $("weeklySales").innerHTML=`${s.units} <small>шт.</small>`;$("salesProgress").style.width=Math.min(100,s.units/500*100)+"%";$("salesPercent").textContent=`${Math.round(s.units/500*100)}% недельной цели`;
- $("activeClients").innerHTML=`${s.active} <small>/ 300</small>`;$("grossProfit").textContent="$"+Math.round(s.units*s.margin).toLocaleString("en-US");
- const done=state.tasks.filter(t=>t.done).length;$("taskCount").textContent=`${done}/${state.tasks.length}`;
- const ms=[["Неделя 1","75–80 шт."],["Неделя 2","80 шт."],["Неделя 3","85 шт."],["Неделя 4","90 шт."],["Недели 5–8","95–110 шт."],["Недели 9–13","115–140 шт."]];
- $("milestones").innerHTML=ms.map((m,i)=>`<div class="listitem"><div class="row"><b>${m[0]}</b><span class="pill">${m[1]}</span></div><div class="barline"><div style="width:${[15,16,17,18,22,28][i]}%"></div></div></div>`).join("");
-}
+function renderHome(){ /* Главная намеренно содержит только отделы и ИИ-помощника. */ }
+
 function renderTasks(){
  $("todayTitle").textContent="План на "+new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
  $("taskList").innerHTML=state.tasks.map((t,i)=>`<div class="task ${t.done?"done":""}"><input type="checkbox" data-task="${i}" ${t.done?"checked":""}><label><b>${esc(t.title)}</b><small>${esc(t.note||"")}</small></label><button class="mini danger" data-del-task="${i}">Удалить</button></div>`).join("");
@@ -319,6 +321,7 @@ $("showTasksBtn").onclick=()=>document.querySelector('[data-tab="tasks"]').click
 $("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex++;localStorage.setItem("aisCoachStep",String(coachIndex));renderCoach();$("coachFeedback").textContent="Отлично! Прочитай следующий этап и выполни его.";}else{$("coachProgress").style.width="100%";$("coachFeedback").textContent="Рабочий день завершён. Запиши KPI и подготовь план на завтра.";localStorage.setItem("aisCoachStep","0");coachIndex=0;}};
 $("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
 document.querySelectorAll('[data-open-dept]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.openDept}"]`).click()));
+$("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
 renderHome();renderTasks();renderClients();renderSales();initFinance();renderCoach();showDailyWelcome();
 const splash=$("motivationSplash");
 function closeSplash(){if(!splash)return;splash.classList.add("dismissed");window.setTimeout(()=>splash.remove(),500)}
