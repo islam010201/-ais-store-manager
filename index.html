@@ -167,6 +167,10 @@ nav .tab{letter-spacing:-.1px}
 .upcoming-task-card.overdue{border-color:#e8a45b}
 .upcoming-task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .upcoming-task-actions button{min-height:40px}
+
+/* AIS.Store Manager 4.0 — inventory worksheet */
+.inventory-table-wrap{overflow-x:auto;margin-top:12px}.inventory-table{width:100%;border-collapse:collapse;min-width:650px;font-size:13px}.inventory-table th,.inventory-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}.inventory-table th{font-size:11px;color:var(--muted);text-transform:uppercase}.inventory-total{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.inventory-total .notice{flex:1;min-width:130px}.inventory-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.inventory-actions button{flex:1;min-width:130px}
+
 </style>
 <script>
 if ('serviceWorker' in navigator) {
@@ -259,7 +263,23 @@ if ('serviceWorker' in navigator) {
   </section>
 
   <section id="sales" class="hidden">
-    <div class="sales-heading"><div><div class="sales-eyebrow">AIS.STORE · WHOLESALE</div><h1>Отдел продаж</h1><p class="muted">Заказы, клиенты и результат — в одном рабочем месте.</p></div><div class="sales-mark">AIS<span>+</span></div></div><div class="sales-quick"><div class="sales-quick-card"><b>01</b><span>План продаж</span><small>Обновить KPI недели</small></div><div class="sales-quick-card"><b>02</b><span>Клиенты</span><small>Открыть базу покупателей</small></div><div class="sales-quick-card"><b>03</b><span>Наличие</span><small>Проверить товар перед обещанием</small></div><div class="sales-quick-card"><b>04</b><span>Возврат / ремонт</span><small>Зафиксировать проблему телефона</small></div></div><p class="sales-note">Пока это визуальная организация существующих функций: реальные складские операции, возвраты и ремонт будут добавлены отдельно.</p>
+    <div class="sales-heading"><div><div class="sales-eyebrow">AIS.STORE · WHOLESALE</div><h1>Отдел продаж</h1><p class="muted">Заказы, клиенты и результат — в одном рабочем месте.</p></div><div class="sales-mark">AIS<span>+</span></div></div><div class="sales-quick"><div class="sales-quick-card"><b>01</b><span>План продаж</span><small>Обновить KPI недели</small></div><div class="sales-quick-card"><b>02</b><span>Клиенты</span><small>Открыть базу покупателей</small></div><div class="sales-quick-card"><b>03</b><span>Наличие</span><small>Проверить товар перед обещанием</small></div><div class="sales-quick-card"><b>04</b><span>Возврат / ремонт</span><small>Зафиксировать проблему телефона</small></div></div><p class="sales-note">Складская ведомость: каждая запись хранится на этом устройстве. Для полного учёта IMEI добавляй отдельную запись на каждый телефон.</p>
+    <div class="card" id="inventoryWorkspace"><h2>Склад · ведомость товара</h2><p class="muted">Добавляй модель, IMEI, количество и закупочную стоимость. Сумма считается автоматически.</p>
+      <div class="formgrid">
+        <div><label class="field">Модель / товар</label><input id="invModel" placeholder="iPhone 15 Pro 256 GB"></div>
+        <div><label class="field">IMEI / серийный номер (необязательно)</label><input id="invImei" placeholder="15 цифр IMEI"></div>
+        <div><label class="field">Количество, шт.</label><input id="invQty" type="number" min="1" step="1" value="1"></div>
+        <div><label class="field">Закупочная цена за 1 шт., $</label><input id="invCost" type="number" min="0" step="0.01" placeholder="450"></div>
+        <div><label class="field">Состояние</label><select id="invCondition"><option>Новый</option><option selected>Open Box</option><option>Б/У</option><option>Ремонт</option></select></div>
+        <div><label class="field">Примечание</label><input id="invNote" placeholder="Цвет, память, комплект"></div>
+      </div>
+      <button class="primary" id="addInventoryItem" type="button">Добавить в склад</button>
+      <div class="inventory-total"><div class="notice">Позиций: <b id="invCount">0</b></div><div class="notice">Телефонов: <b id="invUnits">0</b></div><div class="notice">Стоимость склада: <b id="invValue">$0.00</b></div></div>
+      <div class="inventory-table-wrap"><table class="inventory-table"><thead><tr><th>Модель / описание</th><th>IMEI</th><th>Состояние</th><th>Кол-во</th><th>Цена/шт.</th><th>Сумма</th><th></th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
+      <div id="inventoryEmpty" class="empty">Склад пока пуст. Добавь первую позицию.</div>
+      <div class="inventory-actions"><button class="mini" id="exportInventoryXml" type="button">Экспорт склада в XML</button><button class="mini" id="exportInventoryCsv" type="button">Экспорт в CSV</button></div>
+      <div class="notice">Важно: данные сохраняются только в этом браузере. Перед обновлением приложения сделай резервную копию в меню приложения.</div>
+    </div>
     <div class="card"><h2>Итоги текущей недели</h2><div class="formgrid"><div><label class="field">Продано телефонов, шт.</label><input id="sUnits" type="number" min="0" value="75"></div><div><label class="field">Активные покупатели</label><input id="sActive" type="number" min="0" value="20"></div><div><label class="field">Валовая прибыль на телефон, $</label><input id="sMargin" type="number" min="0" step=".5" value="15"></div><div><label class="field">Новые / возвращённые клиенты</label><input id="sNew" type="number" min="0" value="3"></div><div><label class="field">Целевые контакты за неделю</label><input id="sContacts" type="number" min="0" value="180"></div><div><label class="field">Предложения отправлены</label><input id="sOffers" type="number" min="0" value="40"></div><div><label class="field">Повторные касания</label><input id="sFollowups" type="number" min="0" value="40"></div><div><label class="field">Заказы получены</label><input id="sOrders" type="number" min="0" value="15"></div></div><button class="primary" id="saveSales">Сохранить KPI</button></div>
     <div class="grid" style="margin-top:12px"><div class="card"><div class="muted">Контакты</div><div class="kpi" id="kContacts">180</div><div class="notice">Ориентир: 150–210 в неделю</div></div><div class="card"><div class="muted">Предложения</div><div class="kpi" id="kOffers">40</div><div class="notice">Ориентир: 30–50 в неделю</div></div><div class="card"><div class="muted">Заказы</div><div class="kpi" id="kOrders">15</div><div class="notice">Считай реальные заказы, не обещания</div></div><div class="card"><div class="muted">Новые / возвращённые</div><div class="kpi" id="kNew">3</div><div class="notice">Ориентир: 2–4 в неделю</div></div></div>
   </section>
@@ -281,11 +301,12 @@ const defaultTasks=[
  {title:"Проверить товар и отгрузки",note:"Сверить заявки с реальным наличием"},
  {title:"Подвести итоги и проверить деньги",note:"Продажи, прибыль, остатки, сумма на закупку"}
 ];
-const defaultState={tasks:defaultTasks.map(t=>({...t,done:false})),clients:[],sales:{units:75,active:20,margin:15,new:3,contacts:180,offers:40,followups:40,orders:15},finance:{units:75,cost:400,days:14,credit:0,cash:0}};
+const defaultState={tasks:defaultTasks.map(t=>({...t,done:false})),clients:[],sales:{units:75,active:20,margin:15,new:3,contacts:180,offers:40,followups:40,orders:15},finance:{units:75,cost:400,days:14,credit:0,cash:0},inventory:[]};
 let state;
 try{state=JSON.parse(localStorage.getItem("aisStoreMVP")||"null")}catch(e){state=null}
 if(!state)state=structuredClone(defaultState);
-function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();renderUpcomingTask();}
+if(!Array.isArray(state.inventory))state.inventory=[];
+function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();renderInventory();renderUpcomingTask();}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 const coachSteps=[
@@ -340,6 +361,20 @@ function renderClients(){
  document.querySelectorAll("[data-contacted]").forEach(el=>el.onclick=()=>{const c=state.clients.find(x=>x.id===el.dataset.contacted);if(c){c.lastContact=today;c.nextContact="";if(c.status==="Новый")c.status="Контакт установлен";save()}});
  document.querySelectorAll("[data-tomorrow]").forEach(el=>el.onclick=()=>{const c=state.clients.find(x=>x.id===el.dataset.tomorrow);if(c){const d=new Date();d.setDate(d.getDate()+1);c.nextContact=d.toISOString().slice(0,10);save()}});
 }
+function money(n){return '$'+(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function renderInventory(){
+ const items=state.inventory||[];
+ const rows=$('inventoryRows'); if(!rows)return;
+ rows.innerHTML=items.map((it,i)=>`<tr><td><b>${esc(it.model)}</b>${it.note?`<div class="muted">${esc(it.note)}</div>`:''}</td><td>${esc(it.imei||'—')}</td><td>${esc(it.condition||'—')}</td><td>${Number(it.qty)||0}</td><td>${money(it.cost)}</td><td><b>${money((Number(it.qty)||0)*(Number(it.cost)||0))}</b></td><td><button class="mini danger" data-inv-delete="${i}" type="button">Удалить</button></td></tr>`).join('');
+ const units=items.reduce((a,x)=>a+(Number(x.qty)||0),0), value=items.reduce((a,x)=>a+(Number(x.qty)||0)*(Number(x.cost)||0),0);
+ $('invCount').textContent=items.length;$('invUnits').textContent=units;$('invValue').textContent=money(value);$('inventoryEmpty').style.display=items.length?'none':'block';
+ document.querySelectorAll('[data-inv-delete]').forEach(b=>b.onclick=()=>{if(confirm('Удалить эту позицию со склада?')){state.inventory.splice(Number(b.dataset.invDelete),1);save();}});
+}
+function downloadFile(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function xmlEscape(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+$('addInventoryItem').onclick=()=>{const model=$('invModel').value.trim(),qty=Math.floor(Number($('invQty').value)),cost=Number($('invCost').value);if(!model){alert('Укажи модель / товар.');return}if(!Number.isFinite(qty)||qty<1){alert('Количество должно быть не меньше 1.');return}if(!Number.isFinite(cost)||cost<0){alert('Укажи корректную закупочную цену.');return}state.inventory.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),model,imei:$('invImei').value.trim(),qty,cost,condition:$('invCondition').value,note:$('invNote').value.trim(),createdAt:new Date().toISOString()});['invModel','invImei','invNote'].forEach(id=>$(id).value='');$('invQty').value='1';$('invCost').value='';save();alert('Позиция добавлена на склад.')};
+$('exportInventoryXml').onclick=()=>{const items=state.inventory||[];const xml='<?xml version="1.0" encoding="UTF-8"?>\n<aisInventory exportedAt="'+new Date().toISOString()+'">\n'+items.map(it=>'  <item>\n    <model>'+xmlEscape(it.model)+'</model>\n    <imei>'+xmlEscape(it.imei||'')+'</imei>\n    <condition>'+xmlEscape(it.condition||'')+'</condition>\n    <quantity>'+Number(it.qty||0)+'</quantity>\n    <unitCost>'+Number(it.cost||0).toFixed(2)+'</unitCost>\n    <totalCost>'+((Number(it.qty)||0)*(Number(it.cost)||0)).toFixed(2)+'</totalCost>\n    <note>'+xmlEscape(it.note||'')+'</note>\n  </item>').join('\n')+'\n</aisInventory>\n';downloadFile('ais-inventory.xml',xml,'application/xml;charset=utf-8')};
+$('exportInventoryCsv').onclick=()=>{const items=state.inventory||[];const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv='Модель,IMEI,Состояние,Количество,Цена за штуку USD,Сумма USD,Примечание\r\n'+items.map(it=>[it.model,it.imei,it.condition,it.qty,it.cost,(Number(it.qty)||0)*(Number(it.cost)||0),it.note].map(q).join(',')).join('\r\n');downloadFile('ais-inventory.csv','\ufeff'+csv,'text/csv;charset=utf-8')};
 function renderSales(){
  const s=state.sales;const map={sUnits:"units",sActive:"active",sMargin:"margin",sNew:"new",sContacts:"contacts",sOffers:"offers",sFollowups:"followups",sOrders:"orders"};
  Object.entries(map).forEach(([id,k])=>{if($(id)&&document.activeElement!==$(id))$(id).value=s[k]});
@@ -362,7 +397,7 @@ $("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex+
 $("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
 document.querySelectorAll('[data-open-dept]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.openDept}"]`).click()));
 $("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]').click();
-renderHome();renderTasks();renderClients();renderSales();initFinance();renderCoach();showDailyWelcome();
+renderHome();renderTasks();renderClients();renderSales();renderInventory();initFinance();renderCoach();showDailyWelcome();
 
 </script>
 </body>
