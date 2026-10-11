@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="AIS Sales Manager — ежедневная система менеджера для роста оптовых продаж телефонов.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<title>AIS Sales Manager 5.3 — Воронка продаж</title>
+<style>
+:root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--text:#f4f7fb;--muted:#9aabc3;--blue:#d8ff3e;--green:#9bdc28;--line:#263650;--amber:#ffbf5b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111e,#111d31);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.brand{font-weight:900;font-size:24px;letter-spacing:.5px}.brand span{color:var(--blue)}.sub{color:var(--muted);font-size:12px;margin-top:4px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px}.tab,button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:12px 15px;border-radius:13px;cursor:pointer;font-weight:700;min-height:44px}.tab.active,button.primary{background:var(--blue);border-color:var(--blue);color:#111827}
+h1{font-size:clamp(25px,4vw,34px);margin:8px 0;line-height:1.15}h2{font-size:18px;margin:0 0 13px}h3{font-size:15px;margin:0 0 8px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}.card{background:rgba(18,28,46,.96);border:1px solid var(--line);border-radius:20px;padding:18px;min-width:0;box-shadow:0 8px 24px rgba(0,0,0,.12)}.kpi{font-size:26px;font-weight:800;margin:8px 0}.kpi small{font-size:13px;color:var(--muted);font-weight:500}.progress{height:8px;background:#273750;border-radius:10px;overflow:hidden;margin:12px 0}.progress div{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));width:0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.task{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}.task input{width:18px;height:18px;accent-color:var(--green);margin-top:2px}.task label{flex:1;cursor:pointer}.task.done label{text-decoration:line-through;color:var(--muted)}.task small{display:block;color:var(--muted);margin-top:4px}
+input,select,textarea{width:100%;padding:11px 12px;background:#0d1728;border:1px solid var(--line);border-radius:10px;color:var(--text);font:inherit;margin:5px 0 11px}label.field{display:block;color:var(--muted);font-size:12px;margin-top:5px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.pill{font-size:12px;border-radius:999px;background:#183d39;color:#76f0c3;padding:5px 8px}.listitem{padding:12px 0;border-bottom:1px solid var(--line)}.listitem:last-child{border:0}.barline{height:7px;background:#263650;border-radius:10px;overflow:hidden;margin-top:8px}.barline div{height:100%;background:var(--blue)}.hidden{display:none!important}.notice{font-size:12px;color:var(--muted);line-height:1.5}.empty{color:var(--muted);padding:15px 0}.danger{background:#482533;border-color:#713449}.mini{padding:7px 9px;font-size:12px}.footer{color:var(--muted);font-size:11px;text-align:center;padding:20px}
+
+/* AIS Manager 3.0 readability */
+:root{--blue:#d8ff3e;--green:#a5e635;--line:#2b3a50}
+button.primary,.tab.active{color:#111827;font-weight:800}
+.tab{white-space:nowrap}.welcome{padding:22px}.notice{font-size:13px;line-height:1.55}.task{padding:14px 0}.task label b{font-size:15px;line-height:1.4}.pill{font-weight:750}
+@media(max-width:760px){nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tab{width:100%;text-align:center}.top{flex-direction:column;align-items:stretch}.top .btnrow button{flex:1}.welcome{padding:18px}.card{padding:15px}}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.app{padding:12px}.kpi{font-size:23px}.top{align-items:flex-start}.formgrid{grid-template-columns:1fr}}
+.listitem .btnrow{margin-top:8px}.listitem select{min-width:110px;font-size:12px}.listitem button{margin:3px 3px 0 0}
+
+/* AIS.Store Manager 3.2 — department-oriented visual refresh; existing data logic preserved */
+:root{--bg:#f3f4f0;--panel:#ffffff;--panel2:#20231d;--text:#20231d;--muted:#666b62;--line:#dfe2da;--blue:#d9ff45;--green:#b6e83c;--amber:#ffbf5b}
+body{background:#f3f4f0;color:#20231d}
+.app{max-width:1080px;padding:14px}
+.brand{letter-spacing:.7px}.brand span{color:#799d00!important}.sub{color:#686e63}
+.card{background:#fff;border:1px solid #e0e3dc;box-shadow:0 4px 16px rgba(22,28,15,.05);border-radius:16px;color:#20231d}
+.muted,.notice,.footer,label.field{color:#62675f}
+nav{gap:8px} .tab,button{background:#fff;color:#20231d;border:1px solid #d9ddd3;border-radius:12px}
+.tab.active,button.primary{background:#d9ff45;border-color:#d9ff45;color:#20231d}
+input,select,textarea{background:#fff;color:#20231d;border-color:#d8ddd2}
+.progress,.barline{background:#e4e8de}.progress div,.barline div{background:#b6e83c}
+.pill{background:#edf6d5;color:#3b5010}
+.welcome{background:#20231d!important;color:#fff}.welcome .muted{color:#e2e5dc}.welcome .pill{background:#343c29!important;color:#d9ff45!important}
+#sales{background:#f3f4f0;border-radius:18px;padding:14px;border:1px solid #e0e3dc}
+.sales-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#20231d;color:#fff;border-radius:16px;padding:20px;margin-bottom:12px}
+.sales-heading h1{color:#fff;margin:7px 0}.sales-heading .muted{color:#d4d9ce}.sales-eyebrow{color:#d9ff45;font-size:11px;font-weight:900;letter-spacing:1.5px}.sales-mark{width:58px;height:58px;border-radius:15px;background:#d9ff45;color:#20231d;display:grid;place-items:center;font-weight:950;font-size:20px;flex-shrink:0}.sales-mark span{color:#718e00}
+.sales-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:10px 0 14px}.sales-quick-card{background:#fff;border:1px solid #e0e3dc;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px;min-height:110px}.sales-quick-card b{display:grid;place-items:center;background:#d9ff45;color:#20231d;border-radius:8px;width:30px;height:30px;font-size:12px}.sales-quick-card span{font-weight:850;font-size:14px}.sales-quick-card small{font-size:11px;line-height:1.4;color:#62675f}.sales-note{border-left:4px solid #d9ff45;padding:10px 12px;background:#fff;border-radius:0 10px 10px 0;color:#62675f;font-size:12px;line-height:1.5}
+#sales h2{color:#20231d}#sales .kpi{color:#20231d}#sales .card{box-shadow:none}
+@media(max-width:760px){.app{padding:10px}.sales-heading{padding:16px}.sales-quick{grid-template-columns:repeat(2,minmax(0,1fr))}.sales-quick-card{min-height:100px}.top{flex-direction:row;align-items:center}.top .btnrow{flex-wrap:wrap}.top .btnrow button{padding:9px;font-size:12px}.brand{font-size:21px}}
+
+
+/* AIS.Store Manager 3.3 — motivational startup screen */
+#motivationSplash{position:fixed;inset:0;z-index:99999;background:#080a07;color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .45s ease,visibility .45s ease;padding:0;}
+#motivationSplash.dismissed{opacity:0;visibility:hidden;pointer-events:none}
+#motivationSplash .splash-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;opacity:.76}
+#motivationSplash:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.06) 32%,rgba(0,0,0,.14) 48%,rgba(0,0,0,.92) 78%,#050605 100%)}
+#motivationSplash .splash-content{position:relative;z-index:1;width:100%;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 32px) 22px calc(env(safe-area-inset-bottom,0px) + 26px);gap:16px}
+#motivationSplash .splash-brand{font-weight:950;letter-spacing:2px;font-size:clamp(27px,7vw,42px);color:#fff;text-shadow:0 2px 18px #000}
+#motivationSplash .splash-brand span{color:#d9ff45}
+#motivationSplash .splash-crown{font-size:25px;color:#d9ff45;margin-bottom:4px}
+#motivationSplash .splash-goal{margin-top:auto;margin-bottom:10px;text-shadow:0 3px 20px #000}
+#motivationSplash .splash-goal .small{font-size:clamp(18px,5vw,25px);font-weight:850;letter-spacing:1px}
+#motivationSplash .splash-goal .big{font-size:clamp(32px,9vw,54px);line-height:1.02;font-weight:950;color:#d9ff45;letter-spacing:-1px;margin:7px 0;text-transform:uppercase}
+#motivationSplash .splash-tagline{font-size:15px;line-height:1.5;color:#f3f4ef;max-width:330px}
+#motivationSplash .splash-pill{border:1px solid #d9ff45;border-radius:999px;padding:10px 24px;color:#d9ff45;letter-spacing:3px;font-size:11px;font-weight:850;background:rgba(0,0,0,.35)}
+#motivationSplash .splash-skip{border:1px solid rgba(255,255,255,.55);background:rgba(0,0,0,.38);color:#fff;border-radius:999px;padding:10px 18px;min-height:42px;font-weight:700}
+@media(min-width:700px){#motivationSplash .splash-content{max-width:650px;margin:auto}#motivationSplash .splash-photo{object-position:center 42%}}
+
+/* AIS.Store Manager 3.4 — clearer department workspaces */
+nav{background:#20231d;padding:8px;border-radius:16px;box-shadow:0 5px 18px rgba(15,20,10,.12)}
+nav .tab{flex:1;min-width:0;font-size:13px;font-weight:850;min-height:48px;background:#30352c;border-color:#3b4234;color:#f4f6ef;border-radius:11px}
+nav .tab.active{background:#d9ff45;border-color:#d9ff45;color:#20231d;box-shadow:0 2px 0 #a8c92c}
+#home .welcome{background:linear-gradient(135deg,#171a15,#292e24)!important;border:1px solid #d9ff45!important;box-shadow:0 8px 25px rgba(20,25,12,.18)}
+#home .grid .card{border-top:3px solid #d9ff45}
+#tasks{background:linear-gradient(180deg,#20231d 0,#20231d 180px,#f3f4f0 180px);padding:14px;border-radius:18px}
+#tasks>h1{color:#fff;margin-top:4px}#tasks>p{color:#d9dfd1;margin-bottom:18px}
+#tasks .card{border-color:#e1e4dc;box-shadow:0 5px 18px rgba(0,0,0,.06)}
+#tasks .card:first-of-type{border-top:4px solid #d9ff45}
+#tasks #todayTitle{font-size:20px}
+#tasks #taskProgress{background:#d9ff45}
+#tasks .task{border-bottom-color:#e7e9e3}
+#tasks .task input{accent-color:#789900;width:22px;height:22px}
+#tasks .task label b{color:#20231d}
+#tasks .pill{background:#eff8d8;color:#3d510e}
+#clients>h1{border-left:5px solid #d9ff45;padding-left:12px}
+#clients .card{box-shadow:0 4px 15px rgba(20,25,12,.04)}
+#sales{background:#f0f2ec;border:1px solid #dce1d4;box-shadow:0 5px 20px rgba(20,25,12,.04)}
+#sales .sales-heading{background:linear-gradient(120deg,#171a15,#30382a);border:1px solid #39432d;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+#sales .sales-quick-card{transition:transform .15s ease;border-top:3px solid #d9ff45}
+#sales .sales-quick-card b{background:#d9ff45}
+#sales .card{border-top:2px solid #d9ff45}
+#finance{background:#e8ece5;padding:14px;border:1px solid #d5ddd1;border-radius:18px}
+#finance>h1{background:#24372a;color:#fff;padding:18px;border-radius:14px;margin:0 0 10px}
+#finance>p{background:#fff;padding:12px 14px;border-radius:10px;border-left:4px solid #789b4a;margin:0 0 14px;color:#596157}
+#finance .card{border-top:3px solid #6d8c50;box-shadow:0 4px 14px rgba(20,25,12,.04)}
+#finance .kpi{color:#263d29}
+#finance button.primary{background:#263d29;border-color:#263d29;color:#fff}
+#finance input{border-color:#cbd5c5}
+#motivationSplash .splash-skip{font-size:14px}
+@media(max-width:760px){nav{grid-template-columns:repeat(2,minmax(0,1fr));display:grid}nav .tab{font-size:12px;padding:10px 7px}#tasks,#finance{padding:10px}#sales{padding:10px}}
+
+
+
+/* AIS.Store Manager 3.5 — strong, unmistakable visual identity per department */
+#tasks{background:linear-gradient(180deg,#151a12 0,#242c1d 205px,#f5f7f1 205px)!important;border:1px solid #d9ff45!important;padding:16px!important;border-radius:20px!important}
+#tasks>h1{font-size:30px!important;color:#d9ff45!important;letter-spacing:-.5px}
+#tasks>p{color:#f1f5e9!important;font-weight:600}
+#tasks .card{background:#fff!important;border:1px solid #dfe5d7!important;border-radius:16px!important}
+#tasks .card:first-of-type{border-top:5px solid #d9ff45!important}
+#tasks #todayTitle{color:#20251b!important}
+#clients{background:linear-gradient(180deg,#173c5b 0,#285b80 150px,#f1f6fa 150px)!important;padding:16px!important;border-radius:20px!important;border:1px solid #c7dbe8!important}
+#clients>h1{color:#fff!important;border-left:5px solid #8bd6ff!important;padding-left:12px!important;margin-top:4px!important}
+#clients>p{color:#e4f2fc!important;font-weight:600}
+#clients .grid .card{background:#fff!important;border-top:4px solid #6bbbe9!important;border-radius:14px!important}
+#clients .two .card,#clients>.card{background:#fff!important;border-color:#d5e4ee!important;border-radius:15px!important}
+#clients h2{color:#173c5b!important}
+#clients button.primary{background:#17618c!important;border-color:#17618c!important;color:#fff!important}
+#clients input,#clients select,#clients textarea{background:#f8fbfd!important;border-color:#c8dce8!important;color:#1c3445!important}
+#sales{background:#f1f3ed!important;border:2px solid #d9ff45!important;border-radius:20px!important;padding:16px!important}
+#sales .sales-heading{min-height:155px!important;background:linear-gradient(125deg,#11140f,#303a24)!important;border:1px solid #53613b!important;border-bottom:5px solid #d9ff45!important}
+#sales .sales-heading h1{font-size:32px!important;letter-spacing:-.7px!important}
+#sales .sales-quick-card{background:#fff!important;border:1px solid #dce2d4!important;border-top:4px solid #d9ff45!important;min-height:120px!important}
+#sales .sales-quick-card span{font-size:15px!important}
+#sales .card{background:#fff!important;border:1px solid #dce2d4!important;border-left:4px solid #d9ff45!important;border-radius:14px!important}
+#finance{background:linear-gradient(180deg,#203c2a 0,#2d4a36 150px,#eef3ee 150px)!important;border:1px solid #c9d8ca!important;padding:16px!important;border-radius:20px!important}
+#finance>h1{background:transparent!important;color:#fff!important;padding:4px 2px 0!important;font-size:30px!important;letter-spacing:-.4px!important}
+#finance>p{background:#fff!important;border-left:5px solid #83a989!important;color:#46584a!important}
+#finance .card{background:#fff!important;border:1px solid #d4e0d5!important;border-top:5px solid #648a6b!important;border-radius:15px!important}
+#finance .kpi{font-size:30px!important;color:#21482c!important}
+#finance button.primary{background:#244d30!important;border-color:#244d30!important;color:#fff!important}
+#finance input{background:#fbfdfb!important;border-color:#cbd8cc!important;color:#203528!important}
+#home .welcome{min-height:205px!important;background:linear-gradient(125deg,#11140f,#303a24)!important}
+#home .grid .card{border-top:4px solid #d9ff45!important}
+nav .tab{letter-spacing:-.1px}
+@media(max-width:760px){#tasks,#clients,#sales,#finance{padding:10px!important}#tasks>h1,#clients>h1,#finance>h1{font-size:26px!important}#sales .sales-heading{min-height:130px!important}#clients .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* AIS.Store Manager 3.6 — clean department-only home screen */
+.department-home{padding:0 0 18px!important}
+.department-home-heading{background:#20231d;color:#fff;border-radius:18px;padding:22px 20px;margin-bottom:14px;border-bottom:4px solid #d9ff45}
+.department-home-heading h1{color:#fff;margin:9px 0 5px}
+.department-home-heading .muted{color:#d4d9ce;margin:0}
+.department-launcher{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.department-tile{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:9px;min-height:180px;padding:17px;border-radius:18px;border:1px solid #dfe2da;background:#fff;color:#20231d;box-shadow:0 5px 16px rgba(22,28,15,.05);white-space:normal}
+.department-tile:active{transform:scale(.985)}
+.department-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:13px;background:#d9ff45;color:#20231d;font-size:22px}
+.department-title{font-size:18px;font-weight:900;line-height:1.2}
+.department-desc{font-size:12px;line-height:1.45;color:#62675f;font-weight:500}
+.department-arrow{font-size:12px;font-weight:850;margin-top:auto;padding-top:7px;color:#35451c}
+.manager-tile{border-top:4px solid #d9ff45}
+.clients-tile{border-top:4px solid #6da8df}
+.clients-tile .department-icon{background:#e1efff}
+.sales-tile{border-top:4px solid #20231d}
+.sales-tile .department-icon{background:#20231d;color:#d9ff45}
+.finance-tile{border-top:4px solid #68a878}
+.finance-tile .department-icon{background:#e0f3e4;color:#245a35}
+.department-home-footer{text-align:center;color:#74796f;font-size:11px;padding:18px 6px 2px}
+#home.department-home~.footer{display:none}
+@media(max-width:420px){.department-home-heading{padding:18px}.department-launcher{gap:9px}.department-tile{padding:13px;min-height:174px}.department-title{font-size:16px}.department-desc{font-size:11px}}
+
+
+.home-ai-card{margin-top:16px;padding:18px;border-radius:18px;background:#20231d;color:#fff;border:1px solid #d9ff45;box-shadow:0 8px 22px rgba(20,25,12,.08)}
+.home-ai-head{display:flex;align-items:center;gap:12px}.home-ai-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#d9ff45;color:#20231d;font-size:25px;font-weight:900}.home-ai-head strong{display:block;color:#d9ff45;font-size:17px}.home-ai-head small{display:block;color:#d4d9ce;font-size:12px;margin-top:3px}.home-ai-card p{color:#eef0e9;font-size:14px;line-height:1.55;margin:14px 0}.home-ai-button{background:#d9ff45;color:#20231d;border:0;border-radius:12px;padding:12px 15px;font-weight:850;width:100%}
+
+.upcoming-task-card{margin-top:14px;border:1px solid var(--line);border-radius:18px;padding:16px;background:var(--card);box-shadow:var(--shadow)}
+.upcoming-task-head{display:flex;align-items:center;gap:9px;font-weight:850;margin-bottom:10px}
+.upcoming-task-title{font-size:18px;font-weight:850;margin:5px 0}
+.upcoming-task-meta{font-size:13px;color:var(--muted);margin-top:6px}
+.upcoming-task-card.soon{border-color:#d9ff45;box-shadow:0 0 0 1px rgba(217,255,69,.25)}
+.upcoming-task-card.overdue{border-color:#e8a45b}
+.upcoming-task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.upcoming-task-actions button{min-height:40px}
+
+/* AIS.Store Manager 4.0 — inventory worksheet */
+.inventory-table-wrap{overflow-x:auto;margin-top:12px}.inventory-table{width:100%;border-collapse:collapse;min-width:650px;font-size:13px}.inventory-table th,.inventory-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}.inventory-table th{font-size:11px;color:var(--muted);text-transform:uppercase}.inventory-total{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.inventory-total .notice{flex:1;min-width:130px}.inventory-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.inventory-actions button{flex:1;min-width:130px}
+
+
+/* AIS Sales Manager 5.2 — manager-first sales funnel and order tracking */
+#finance,#inventoryWorkspace,.sales-quick,.sales-note{display:none!important}
+.sales-dashboard{display:block}
+.dash-hero{background:linear-gradient(130deg,#171a15,#303a27);color:#fff;border-radius:22px;padding:25px 23px;margin-bottom:13px;box-shadow:0 8px 24px rgba(20,25,12,.12);border:1px solid #39432d}
+.dash-hero h1{font-size:clamp(32px,7vw,49px);letter-spacing:-1.4px;margin:12px 0}.dash-hero h1 span{color:#d9ff45}.dash-hero p{color:#e1e7d9;line-height:1.5;max-width:500px;margin:0 0 18px}.dash-greeting{color:#d9ff45;font-weight:800;font-size:13px;margin-top:8px}.dash-actions{display:flex;gap:9px;flex-wrap:wrap}.dash-actions button{min-height:48px}.dash-secondary{background:transparent!important;border-color:#68745a!important;color:#fff!important}
+.dash-goal{margin-bottom:13px;border-top:4px solid #d9ff45}.dash-goal h2{margin:4px 0 0}.goal-number{font-size:27px;font-weight:950;white-space:nowrap}.goal-number small{font-size:12px;color:#62675f;font-weight:700}.goal-foot{font-size:12px;color:#62675f}.dash-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:13px}.dash-kpi{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:#fff!important;color:#20231d!important;border:1px solid #dfe3d8!important;border-top:3px solid #d9ff45!important;border-radius:15px;padding:14px;min-width:0;gap:7px}.dash-kpi span{font-size:10px;letter-spacing:.6px;font-weight:900;color:#62675f}.dash-kpi strong{font-size:27px;letter-spacing:-.6px}.dash-kpi small{font-size:11px;color:#62675f;line-height:1.4}.dash-work-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}.dash-focus h2,.dash-ai h2{margin-bottom:12px}.focus-line{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid #e8ebe4;align-items:flex-start}.focus-line>b{display:grid;place-items:center;background:#d9ff45;border-radius:8px;min-width:31px;height:31px;font-size:12px}.focus-line strong{display:block;font-size:14px}.focus-line small{display:block;color:#62675f;font-size:12px;line-height:1.45;margin-top:3px}.full-btn{width:100%;margin-top:14px}.dash-ai{background:#20231d!important;color:#fff!important;border-color:#343b2c!important}.dash-ai p{color:#e1e6da;font-size:13px;line-height:1.55}.ai-symbol{font-size:24px;color:#d9ff45}.ai-open{background:#d9ff45!important;color:#20231d!important;border:0!important;width:100%;margin:5px 0 12px}.ai-tip{border-top:1px solid #414837;padding-top:12px;color:#e0e5d8;font-size:12px;line-height:1.55}.ai-tip b{color:#d9ff45}.dash-footnote{font-size:11px;color:#62675f;padding:13px 2px}.sales-kpi-form{margin-top:12px}
+@media(max-width:760px){.dash-hero{padding:20px 17px}.dash-hero h1{font-size:34px}.dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dash-kpi{padding:12px}.dash-kpi strong{font-size:25px}.dash-work-grid{grid-template-columns:1fr}.goal-number{font-size:24px}.goal-foot{gap:6px;align-items:flex-start;flex-direction:column}nav{grid-template-columns:repeat(2,minmax(0,1fr));display:grid}}
+
+</style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker registration failed:', err)));
+}
+</script>
+</head>
+<body>
+<div id="motivationSplash" role="dialog" aria-label="Мотивационный экран AIS.store">
+  <img class="splash-photo" src="./team-photo.jpg" alt="Команда AIS.store" fetchpriority="high">
+  <div class="splash-content">
+    <div><div class="splash-crown">♛</div><div class="splash-brand"><span>AIS.</span>STORE</div></div>
+    <div class="splash-goal"><div class="small">МЫ СТРОИМ БОЛЬШОЙ БИЗНЕС</div><div class="big">500 телефонов<br>в неделю</div><div class="splash-tagline">Дисциплина. Команда. Результат.</div></div>
+    <div class="splash-pill">STORE MANAGER</div>
+    <button type="button" class="splash-skip" id="skipSplash">Перейти к работе →</button>
+  </div>
+</div>
+<script>
+/* Keep the motivation screen dismissible even if another app feature has a runtime error. */
+(function(){
+  const splash = document.getElementById('motivationSplash');
+  const button = document.getElementById('skipSplash');
+  function closeSplash(){
+    if(!splash) return;
+    splash.classList.add('dismissed');
+    window.setTimeout(()=>{ if(splash.isConnected) splash.remove(); }, 500);
+  }
+  if(button) button.addEventListener('click', closeSplash);
+  window.setTimeout(closeSplash, 3200);
+})();
+</script>
+<div class="app">
+  <header class="top">
+    <div><div class="brand">Ais<span>.Store</span> <span style="color:#fff;font-size:12px;font-weight:500">OWNER</span></div><div class="sub">OWNER CONTROL CENTER · ТВОЙ ЦИФРОВОЙ ПОМОЩНИК</div></div>
+    
+  </header>
+  <nav>
+    <button class="tab active" data-tab="home">Главная</button>
+    <button class="tab" data-tab="tasks">🎯 Мои действия</button>
+    <button class="tab" data-tab="clients">👥 Клиенты</button>
+    <button class="tab" data-tab="sales">📈 Результат продаж</button>
+  </nav>
+
+  <section id="home" class="sales-dashboard">
+    <div class="dash-hero">
+      <div class="sales-eyebrow">AIS.STORE · SALES PERFORMANCE</div>
+      <div id="dailyGreeting" class="dash-greeting">Сегодня твой фокус — продажи.</div>
+      <h1>Больше контактов.<br><span>Больше заказов.</span></h1>
+      <p>Рабочий экран менеджера: каждый день двигай оптовых клиентов к повторному заказу.</p>
+      <div class="dash-actions">
+        <button class="primary" id="dashStart" type="button">Начать работу →</button>
+        <button class="dash-secondary" id="dashClients" type="button">Связаться с клиентами</button>
+      </div>
+    </div>
+    <div class="dash-goal card">
+      <div class="row"><div><div class="muted">ГЛАВНАЯ ЦЕЛЬ</div><h2>500 телефонов в неделю</h2></div><div class="goal-number"><span id="dashUnits">75</span><small> / 500 шт.</small></div></div>
+      <div class="progress"><div id="dashGoalProgress"></div></div>
+      <div class="row goal-foot"><span id="dashGoalPercent">15% от цели</span><span id="dashGoalGap">Осталось 425 телефонов</span></div>
+    </div>
+    <div class="dash-kpis">
+      <button class="dash-kpi" data-go="clients" type="button"><span>ОПТОВЫЕ КЛИЕНТЫ</span><strong id="dashClientsCount">0</strong><small>В базе · открыть клиентов →</small></button>
+      <button class="dash-kpi" data-go="sales" type="button"><span>ЗАКАЗЫ ЗА НЕДЕЛЮ</span><strong id="dashOrders">15</strong><small>Фиксируй подтверждённые заказы →</small></button>
+      <button class="dash-kpi" data-go="sales" type="button"><span>КОНТАКТЫ ЗА НЕДЕЛЮ</span><strong id="dashContacts">180</strong><small>План активности →</small></button>
+      <button class="dash-kpi" data-go="sales" type="button"><span>ВАЛОВАЯ ПРИБЫЛЬ*</span><strong id="dashProfit">$1,125</strong><small>*Оценка по KPI недели →</small></button>
+    </div>
+    <div class="dash-work-grid">
+      <div class="card dash-focus"><div class="row"><h2>План менеджера на сегодня</h2><span class="pill">ФОКУС</span></div>
+        <div class="focus-line"><b>01</b><div><strong>Связаться с оптовиками</strong><small>Узнай потребность и дату следующего заказа.</small></div></div>
+        <div class="focus-line"><b>02</b><div><strong>Отправить точное предложение</strong><small>Только реальные наличие, цена и условия.</small></div></div>
+        <div class="focus-line"><b>03</b><div><strong>Вернуться к тем, кто получил прайс</strong><small>Спроси, что мешает подтвердить заказ.</small></div></div>
+        <div class="focus-line"><b>04</b><div><strong>Закрыть следующий заказ</strong><small>Зафиксируй модели, количество и отгрузку.</small></div></div>
+        <button class="primary full-btn" id="dashTasks" type="button">Открыть мои действия →</button>
+      </div>
+      <div class="card dash-ai"><div class="ai-symbol">✦</div><div class="sales-eyebrow">AIS SALES COACH</div><h2>ИИ-помощник менеджера</h2><p>Поможет выбрать следующий шаг: кому звонить, кому повторно написать и как довести клиента до заказа.</p><button id="homeAiOpen" class="ai-open" type="button">Получить следующий шаг →</button><div class="ai-tip"><b>Правило дня</b><br>Не заканчивай разговор без следующего шага: заказ, отправка прайса или дата повторного контакта.</div></div>
+    </div>
+    <div id="upcomingTaskCard" class="upcoming-task-card" aria-live="polite"></div>
+    <div class="dash-footnote">Данные и KPI сохраняются в браузере этого устройства. Перед обновлением приложения делай резервную копию.</div>
+  </section>
+
+  <section id="tasks" class="hidden">
+    <h1>Рабочий день по этапам</h1><p class="muted">Выполняй шаг за шагом. После каждой отметки помощник покажет, что делать дальше.</p>
+    <div class="card"><div class="row"><h2 id="todayTitle">План на сегодня</h2><button class="mini" id="resetTasks">Сбросить на новый день</button></div><div id="taskList"></div><div class="notice" style="margin:10px 0">Правило: сначала продажи и клиенты, затем заказы и наличие товара, в конце — деньги и отчёт.</div><div class="progress"><div id="taskProgress"></div></div><div class="notice" id="taskSummary"></div></div>
+    <div class="card" style="margin-top:12px"><h2>Добавить задачу</h2><div class="formgrid"><div><label class="field">Задача</label><input id="newTask" placeholder="Например, обзвонить 15 торговцев"></div><div><label class="field">Норма / заметка</label><input id="newTaskNote" placeholder="Например, уточнить заказ"></div><div><label class="field">Дата и время задачи</label><input id="newTaskDue" type="datetime-local"></div></div><button class="primary" id="addTask">Добавить задачу</button></div>
+  </section>
+
+  <section id="clients" class="hidden">
+    <h1>База оптовых клиентов</h1><p class="muted">Начни с наиболее перспективных торговцев. Не вноси конфиденциальные данные, которыми не хочешь делиться на этом устройстве.</p>
+    <div class="grid">
+      <div class="card"><div class="muted">Всего в базе</div><div class="kpi" id="clientTotal">0</div></div>
+      <div class="card"><div class="muted">Активные</div><div class="kpi" id="clientActive">0</div></div>
+      <div class="card"><div class="muted">Новые / на связи</div><div class="kpi" id="clientNew">0</div></div>
+      <div class="card"><div class="muted">Цель активных</div><div class="kpi">100</div></div>
+    </div>
+    <div class="two"><div class="card"><h2>Добавить клиента</h2><div class="formgrid"><div><label class="field">Магазин / имя</label><input id="cName" placeholder="Название магазина"></div><div><label class="field">Регион</label><input id="cRegion" placeholder="Например, Ош"></div><div><label class="field">Телефон (необязательно)</label><input id="cPhone" placeholder="+996 ..."></div><div><label class="field">Категория</label><select id="cType"><option>Крупный</option><option selected>Средний</option><option>Мелкий</option></select></div><div><label class="field">Средний заказ, шт.</label><input id="cOrder" type="number" min="0" value="5"></div><div><label class="field">Этап продаж</label><select id="cStatus"><option>Новый</option><option>Контакт установлен</option><option>Прайс отправлен</option><option>Переговоры</option><option>Заказ</option><option>Активный</option><option>Неактивный</option></select></div><div><label class="field">Следующий контакт</label><input id="cNext" type="date"></div><div><label class="field">Последний контакт</label><input id="cLast" type="date"></div><div><label class="field">Заметка / что нужно клиенту</label><input id="cNotes" placeholder="Например, ждёт iPhone 15 Pro 256 GB"></div></div><button class="primary" id="addClient">Сохранить клиента</button></div>
+    <div class="card"><h2>Кого связаться сегодня</h2><div id="clientNextActions" class="notice">Добавь клиентов и укажи дату следующего контакта.</div><hr style="border-color:var(--line);margin:12px 0"><h2>Поиск и фильтр</h2><input id="clientSearch" placeholder="Поиск по магазину, региону или заметке"><select id="clientFilter"><option>Все</option><option>Активный</option><option>Новый</option><option>Контакт установлен</option><option>Прайс отправлен</option><option>Переговоры</option><option>Заказ</option><option>Неактивный</option></select><div class="notice">Данные хранятся локально в этом браузере. Регулярно делай экспорт резервной копии.</div></div></div>
+    <div class="card" style="margin-top:12px"><h2>Клиенты</h2><div id="clientList"></div></div>
+  </section>
+
+  <section id="sales" class="hidden">
+    <div class="sales-heading"><div><div class="sales-eyebrow">AIS.STORE · WHOLESALE</div><h1>Результат продаж</h1><p class="muted">Измеряй действия, которые превращаются в подтверждённые оптовые заказы.</p></div><div class="sales-mark">AIS<span>+</span></div></div><div class="sales-quick"><div class="sales-quick-card"><b>01</b><span>План продаж</span><small>Обновить KPI недели</small></div><div class="sales-quick-card"><b>02</b><span>Клиенты</span><small>Открыть базу покупателей</small></div><div class="sales-quick-card"><b>03</b><span>Наличие</span><small>Проверить товар перед обещанием</small></div><div class="sales-quick-card"><b>04</b><span>Возврат / ремонт</span><small>Зафиксировать проблему телефона</small></div></div><p class="sales-note">Складская ведомость: каждая запись хранится на этом устройстве. Для полного учёта IMEI добавляй отдельную запись на каждый телефон.</p>
+    <div class="card" id="inventoryWorkspace"><h2>Склад · ведомость товара</h2><p class="muted">Добавляй модель, IMEI, количество и закупочную стоимость. Сумма считается автоматически.</p>
+      <div class="formgrid">
+        <div><label class="field">Модель / товар</label><input id="invModel" placeholder="iPhone 15 Pro 256 GB"></div>
+        <div><label class="field">IMEI / серийный номер (необязательно)</label><input id="invImei" placeholder="15 цифр IMEI"></div>
+        <div><label class="field">Количество, шт.</label><input id="invQty" type="number" min="1" step="1" value="1"></div>
+        <div><label class="field">Закупочная цена за 1 шт., $</label><input id="invCost" type="number" min="0" step="0.01" placeholder="450"></div>
+        <div><label class="field">Состояние</label><select id="invCondition"><option>Новый</option><option selected>Open Box</option><option>Б/У</option><option>Ремонт</option></select></div>
+        <div><label class="field">Примечание</label><input id="invNote" placeholder="Цвет, память, комплект"></div>
+      </div>
+      <button class="primary" id="addInventoryItem" type="button">Добавить в склад</button>
+      <div class="inventory-total"><div class="notice">Позиций: <b id="invCount">0</b></div><div class="notice">Телефонов: <b id="invUnits">0</b></div><div class="notice">Стоимость склада: <b id="invValue">$0.00</b></div></div>
+      <div class="inventory-table-wrap"><table class="inventory-table"><thead><tr><th>Модель / описание</th><th>IMEI</th><th>Состояние</th><th>Кол-во</th><th>Цена/шт.</th><th>Сумма</th><th></th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
+      <div id="inventoryEmpty" class="empty">Склад пока пуст. Добавь первую позицию.</div>
+      <div class="inventory-actions"><button class="mini primary" id="exportInventoryExcel" type="button">Скачать Excel (.xlsx)</button><button class="mini" id="exportInventoryCsv" type="button">Экспорт в CSV</button></div>
+      <div class="notice">Важно: данные сохраняются только в этом браузере. Перед обновлением приложения сделай резервную копию в меню приложения.</div>
+    </div>
+    <div class="card" id="salesFunnel" style="margin-bottom:12px;border-top:4px solid #d9ff45"><div class="row"><div><h2>Воронка продаж</h2><p class="muted" style="margin:0">Смотри, где клиенты переходят к следующему этапу.</p></div><span class="pill">НЕДЕЛЯ</span></div>
+      <div class="grid" style="margin-top:12px">
+        <div class="card"><div class="muted">Контакты</div><div class="kpi" id="funnelContacts">0</div><div class="notice">Фактические касания</div></div>
+        <div class="card"><div class="muted">Предложения</div><div class="kpi" id="funnelOffers">0</div><div class="notice">Конверсия: <b id="funnelOfferRate">0%</b></div></div>
+        <div class="card"><div class="muted">Переговоры</div><div class="kpi" id="funnelNegotiations">0</div><div class="notice">От предложений: <b id="funnelNegotiationRate">0%</b></div></div>
+        <div class="card"><div class="muted">Заказы</div><div class="kpi" id="funnelOrders">0</div><div class="notice">От контактов: <b id="funnelOrderRate">0%</b></div></div>
+      </div>
+      <div class="progress"><div id="funnelProgress"></div></div><div class="notice" id="funnelInsight">Записывай фактические контакты и заказы, чтобы видеть конверсию.</div>
+    </div>
+    <div class="card" id="orderTracker" style="margin-bottom:12px;border-top:4px solid #6da8df"><h2>Учёт заказов</h2><p class="muted">Фиксируй подтверждённые заказы. Воронка учитывает только заказы, не помеченные отменёнными.</p>
+      <div class="formgrid"><div><label class="field">Клиент / магазин</label><input id="orderClient" placeholder="Название магазина"></div><div><label class="field">Количество телефонов</label><input id="orderUnits" type="number" min="1" step="1" value="1"></div><div><label class="field">Сумма заказа, $ (необязательно)</label><input id="orderAmount" type="number" min="0" step="0.01" placeholder="0"></div><div><label class="field">Статус заказа</label><select id="orderStatus"><option>Подтверждён</option><option>Отгружен</option><option>Ожидает оплаты</option><option>Отменён</option></select></div><div><label class="field">Дата заказа</label><input id="orderDate" type="date"></div></div>
+      <button class="primary" id="addOrder" type="button">Сохранить заказ</button><div class="inventory-table-wrap"><table class="inventory-table" style="min-width:620px"><thead><tr><th>Дата</th><th>Клиент</th><th>Телефоны</th><th>Сумма, $</th><th>Статус</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div><div id="ordersEmpty" class="empty">Пока нет записанных заказов.</div>
+    </div>
+    <div class="card sales-kpi-form"><h2>KPI менеджера · текущая неделя</h2><p class="muted">Вводи фактические цифры. Цель — улучшать не только продажи, но и активность, повторные касания и конверсию.</p><div class="formgrid"><div><label class="field">Продано телефонов, шт.</label><input id="sUnits" type="number" min="0" value="75"></div><div><label class="field">Активные покупатели</label><input id="sActive" type="number" min="0" value="20"></div><div><label class="field">Валовая прибыль на телефон, $</label><input id="sMargin" type="number" min="0" step=".5" value="15"></div><div><label class="field">Новые / возвращённые клиенты</label><input id="sNew" type="number" min="0" value="3"></div><div><label class="field">Целевые контакты за неделю</label><input id="sContacts" type="number" min="0" value="180"></div><div><label class="field">Предложения отправлены</label><input id="sOffers" type="number" min="0" value="40"></div><div><label class="field">Повторные касания</label><input id="sFollowups" type="number" min="0" value="40"></div><div><label class="field">Заказы получены</label><input id="sOrders" type="number" min="0" value="15"></div></div><button class="primary" id="saveSales">Сохранить KPI</button></div>
+    <div class="grid" style="margin-top:12px"><div class="card"><div class="muted">Контакты</div><div class="kpi" id="kContacts">180</div><div class="notice">Ориентир: 150–210 в неделю</div></div><div class="card"><div class="muted">Предложения</div><div class="kpi" id="kOffers">40</div><div class="notice">Ориентир: 30–50 в неделю</div></div><div class="card"><div class="muted">Заказы</div><div class="kpi" id="kOrders">15</div><div class="notice">Считай реальные заказы, не обещания</div></div><div class="card"><div class="muted">Новые / возвращённые</div><div class="kpi" id="kNew">3</div><div class="notice">Ориентир: 2–4 в неделю</div></div></div>
+  </section>
+
+  <section id="finance" class="hidden">
+    <h1>Оборотные деньги</h1><p class="muted">Упрощённый калькулятор потребности в капитале. Заполняй фактические значения.</p>
+    <div class="two"><div class="card"><h2>Параметры</h2><label class="field">Продажи, телефонов в неделю</label><input id="fUnits" type="number" value="75" min="0"><label class="field">Себестоимость одного телефона, $</label><input id="fCost" type="number" value="400" min="0"><label class="field">Денежный цикл, дней</label><input id="fDays" type="number" value="14" min="0"><label class="field">Доступная отсрочка / предоплаты, $</label><input id="fCredit" type="number" value="0" min="0"><label class="field">Свободные оборотные деньги, $</label><input id="fCash" type="number" value="0" min="0"><button class="primary" id="calcFinance">Рассчитать</button></div>
+    <div class="card"><h2>Результат</h2><div class="muted">Ориентировочная потребность в капитале</div><div class="kpi" id="capitalNeed">$60,000</div><div class="muted">Оценка дефицита средств</div><div class="kpi" id="capitalGap">$60,000</div><div class="notice">Формула: недельные продажи × себестоимость × дни денежного цикла ÷ 7. Затем вычитаются доступные отсрочки / предоплаты. Это приближение, не бухгалтерский баланс и не финансовая рекомендация.</div></div></div>
+  </section>
+  <section id="backupTools" style="margin-top:14px">
+    <div class="card"><h2>Защита данных · версия 5.3</h2><p class="muted">Экспортируй резервную копию перед обновлениями. Импорт заменит текущие данные только после проверки файла и твоего подтверждения.</p>
+      <div class="btnrow"><button class="primary" id="backupExport" type="button">Скачать резервную копию JSON</button><button id="backupImportBtn" type="button">Восстановить из JSON</button><input id="backupImportFile" type="file" accept=".json,application/json" class="hidden"></div>
+      <div class="notice" id="backupStatus" aria-live="polite" style="margin-top:10px">Ключ хранения aisStoreMVP сохранён для совместимости.</div>
+    </div>
+  </section>
+  <div class="footer">AIS Sales Manager 5.3 · Воронка продаж и учёт заказов · Данные хранятся в браузере на этом устройстве.</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const defaultTasks=[
+ {title:"Связаться с 25–35 торговцами",note:"Целевые звонки и персональные сообщения"},
+ {title:"Отправить актуальный оптовый прайс",note:"Учитывать модели, состояние, память и наличие"},
+ {title:"Сделать 10 повторных касаний",note:"Вернуться к тем, кто получил предложение"},
+ {title:"Закрыть и подтвердить заказы",note:"Фиксировать количество и условия"},
+ {title:"Проверить товар и отгрузки",note:"Сверить заявки с реальным наличием"},
+ {title:"Подвести итоги и проверить деньги",note:"Продажи, прибыль, остатки, сумма на закупку"}
+];
+const defaultState={tasks:defaultTasks.map(t=>({...t,done:false})),clients:[],orders:[],sales:{units:75,active:20,margin:15,new:3,contacts:180,offers:40,followups:40,orders:15},finance:{units:75,cost:400,days:14,credit:0,cash:0},inventory:[]};
+let state;
+try{state=JSON.parse(localStorage.getItem("aisStoreMVP")||"null")}catch(e){state=null}
+if(!state)state=structuredClone(defaultState);
+if(!Array.isArray(state.inventory))state.inventory=[];
+if(!Array.isArray(state.orders))state.orders=[];
+function save(){localStorage.setItem("aisStoreMVP",JSON.stringify(state));renderHome();renderTasks();renderClients();renderSales();renderInventory();renderOrders();renderFunnel();renderUpcomingTask();}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+const coachSteps=[
+ {title:"Этап 1. Связь с оптовыми клиентами",text:"Свяжись с 10 оптовиками. Узнай, какие модели им нужны, сколько телефонов готовы купить и когда планируют заказ.",tip:"Записывай модель, память, состояние, желаемую цену и срок заказа."},
+ {title:"Этап 2. Отправить точное предложение",text:"Отправь актуальный оптовый прайс заинтересованным клиентам. Выдели модели, которые есть в наличии, и укажи реальные условия.",tip:"Не обещай товар, пока не проверил остаток и закупочную цену."},
+ {title:"Этап 3. Повторный контакт",text:"Вернись к клиентам, которые получили прайс. Спроси, что подходит, что мешает заказу и когда удобно подтвердить покупку.",tip:"Записывай следующую дату контакта, чтобы не терять потенциальные сделки."},
+ {title:"Этап 4. Подтвердить заказы и наличие",text:"Подтверди количество, модели, цену и условия отгрузки. Сверь каждый заказ с фактическим наличием товара.",tip:"Считай заказом только подтверждённую договорённость, а не обещание подумать."},
+ {title:"Этап 5. Закрыть день и проверить деньги",text:"Запиши продажи, валовую прибыль, расходы и сумму, доступную для закупки. Определи 3 приоритета на завтра.",tip:"Валовая прибыль не равна чистой: учитывай доставку, зарплату, аренду, налоги и возвраты."}
+];
+let coachIndex=0;
+try{coachIndex=Math.max(0,Math.min(coachSteps.length-1,Number(localStorage.getItem("aisCoachStep")||0)))}catch(e){}
+function renderCoach(){if(!$("coachTitle"))return;const s=coachSteps[coachIndex];if(!s)return;$("coachTitle").textContent=s.title;$("coachText").textContent=s.text;$("coachTip").textContent="Совет помощника: "+s.tip;$("coachStep").textContent=`ШАГ ${coachIndex+1} ИЗ ${coachSteps.length}`;$("coachProgress").style.width=((coachIndex)/coachSteps.length*100)+"%";$("completeStepBtn").textContent=coachIndex===coachSteps.length-1?"Завершить рабочий день ✓":"Этап выполнен → следующий";$("coachFeedback").textContent=coachIndex===0?"Начни с 10 оптовиков. После этапа переходи к предложению.":coachIndex===coachSteps.length-1?"После завершения подготовь план на завтра.":"Следующий шаг откроется после подтверждения выполнения.";}
+function showDailyWelcome(){const h=new Date().getHours();const greet=h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер";const el=$("dailyGreeting");if(el)el.textContent=greet+"! План на сегодня готов.";}
+
+function renderHome(){
+ const sales=state.sales||{}; const units=Math.max(0,Number(sales.units)||0), target=500;
+ const pct=Math.min(100,Math.round(units/target*100));
+ if($("dashUnits"))$("dashUnits").textContent=units;
+ if($("dashGoalProgress"))$("dashGoalProgress").style.width=pct+"%";
+ if($("dashGoalPercent"))$("dashGoalPercent").textContent=pct+"% от цели";
+ if($("dashGoalGap"))$("dashGoalGap").textContent=units>=target?"Цель выполнена!":"Осталось "+(target-units)+" телефонов";
+ if($("dashClientsCount"))$("dashClientsCount").textContent=(state.clients||[]).length;
+ if($("dashOrders"))$("dashOrders").textContent=Number(sales.orders)||0;
+ if($("dashContacts"))$("dashContacts").textContent=Number(sales.contacts)||0;
+ if($("dashProfit"))$("dashProfit").textContent="$"+Math.round(units*(Number(sales.margin)||0)).toLocaleString("en-US");
+ const g=$("dailyGreeting"); if(g){const h=new Date().getHours();g.textContent=(h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер")+". Сегодня работаем на результат.";}
+}
+
+function renderUpcomingTask(){
+ const host=$("upcomingTaskCard"); if(!host)return;
+ const now=Date.now();
+ const pending=(state.tasks||[]).filter(t=>!t.done&&t.dueAt&&Number.isFinite(new Date(t.dueAt).getTime())).sort((a,b)=>new Date(a.dueAt)-new Date(b.dueAt));
+ if(!pending.length){host.className="upcoming-task-card";host.innerHTML='<div class="upcoming-task-head">⏰ Ближайшая задача</div><div class="upcoming-task-title">Пока нет задач со временем</div><div class="upcoming-task-meta">Добавь дату и время в разделе «Менеджер» — здесь появится ближайшая задача.</div><div class="upcoming-task-actions"><button class="primary" type="button" id="goAddTimedTask">Добавить задачу</button></div>';const b=$("goAddTimedTask");if(b)b.onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();return;}
+ const t=pending[0], due=new Date(t.dueAt).getTime(), mins=Math.round((due-now)/60000);
+ let label,cls="upcoming-task-card",timeText;
+ if(mins<0){label="Просрочено";cls+=" overdue";timeText="Просрочено на "+formatMinutes(Math.abs(mins));}
+ else if(mins<=15){label="Скоро";cls+=" soon";timeText=mins===0?"Время выполнять сейчас":"Через "+formatMinutes(mins);}
+ else {label="Следующая задача";timeText="Через "+formatMinutes(mins);}
+ host.className=cls;
+ host.innerHTML=`<div class="upcoming-task-head">⏰ ${label}</div><div class="upcoming-task-title">${esc(t.title)}</div><div class="upcoming-task-meta">${esc(t.note||"")} ${t.note?"· ":""}${esc(new Date(t.dueAt).toLocaleString("ru-RU",{day:"2-digit",month:"long",hour:"2-digit",minute:"2-digit"}))}</div><div class="upcoming-task-meta"><b>${timeText}</b></div><div class="upcoming-task-actions"><button class="primary" type="button" id="openUpcomingTask">Открыть задачу</button><button class="mini" type="button" id="completeUpcomingTask">Отметить выполненной</button></div>`;
+ if($("openUpcomingTask"))$("openUpcomingTask").onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
+ if($("completeUpcomingTask"))$("completeUpcomingTask").onclick=()=>{const idx=state.tasks.indexOf(t);if(idx>=0){state.tasks[idx].done=true;save();}};
+}
+function formatMinutes(m){if(m<60)return m+" мин.";const h=Math.floor(m/60),r=m%60;return h+" ч"+(r?" "+r+" мин.":"");}
+function renderTasks(){
+ $("todayTitle").textContent="План на "+new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
+ $("taskList").innerHTML=state.tasks.map((t,i)=>`<div class="task ${t.done?"done":""}"><input type="checkbox" data-task="${i}" ${t.done?"checked":""}><label><b>${esc(t.title)}</b><small>${esc(t.note||"")}${t.dueAt?" · Срок: "+esc(new Date(t.dueAt).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})):""}</small></label><button class="mini danger" data-del-task="${i}">Удалить</button></div>`).join("");
+ const d=state.tasks.filter(t=>t.done).length,p=state.tasks.length?d/state.tasks.length*100:0;$("taskProgress").style.width=p+"%";$("taskSummary").textContent=`Выполнено ${d} из ${state.tasks.length} задач (${Math.round(p)}%).`;renderUpcomingTask();
+ document.querySelectorAll("[data-task]").forEach(el=>el.onchange=()=>{state.tasks[+el.dataset.task].done=el.checked;save()});
+ document.querySelectorAll("[data-del-task]").forEach(el=>el.onclick=()=>{state.tasks.splice(+el.dataset.delTask,1);save()});
+}
+function renderClients(){
+ const active=state.clients.filter(c=>c.status==="Активный"||c.status==="Заказ").length;
+ $("clientTotal").textContent=state.clients.length;$("clientActive").textContent=active;
+ $("clientNew").textContent=state.clients.filter(c=>["Новый","Контакт установлен","Прайс отправлен","Переговоры"].includes(c.status)).length;
+ const today=new Date().toISOString().slice(0,10);
+ const due=state.clients.filter(c=>c.nextContact&&c.nextContact<=today&&c.status!=="Неактивный").sort((a,b)=>(a.nextContact||"").localeCompare(b.nextContact||""));
+ $("clientNextActions").innerHTML=due.length?`<b>Нужно связаться: ${due.length}</b><ul>${due.slice(0,5).map(c=>`<li><b>${esc(c.name)}</b> — ${esc(c.nextContact===today?"сегодня":"просрочено")}. ${esc(c.notes||"Уточнить потребность и следующий заказ")}</li>`).join("")}</ul>`:'<b>На сегодня нет запланированных контактов.</b><br>Добавляй дату следующего звонка каждому клиенту — приложение покажет приоритетных покупателей здесь.';
+ const q=($("clientSearch")?.value||"").toLowerCase(),f=$("clientFilter")?.value||"Все";
+ const list=state.clients.filter(c=>(f==="Все"||c.status===f)&&`${c.name} ${c.region} ${c.notes||""} ${c.phone||""}`.toLowerCase().includes(q));
+ $("clientList").innerHTML=list.length?list.map(c=>`<div class="listitem"><div class="row"><div style="flex:1;min-width:0"><b>${esc(c.name)}</b> <span class="pill">${esc(c.status)}</span><div class="muted" style="font-size:12px;margin-top:5px">${esc(c.region||"Регион не указан")} · ${esc(c.type)} · средний заказ ${c.order} шт.</div><div class="muted" style="font-size:12px">${esc(c.phone||"Телефон не указан")}</div><div class="notice">Следующий контакт: <b>${esc(c.nextContact||"не назначен")}</b> · Последний: ${esc(c.lastContact||"не указан")}</div><div class="notice">${esc(c.notes||"Добавь заметку о потребности клиента")}</div><div class="btnrow" style="margin-top:8px"><button class="mini" data-contacted="${c.id}">Отметить контакт сегодня</button><button class="mini" data-tomorrow="${c.id}">Перезвонить завтра</button></div></div><div style="min-width:115px"><select data-status="${c.id}" aria-label="Этап клиента">${["Новый","Контакт установлен","Прайс отправлен","Переговоры","Заказ","Активный","Неактивный"].map(x=>`<option ${x===c.status?"selected":""}>${x}</option>`).join("")}</select><button class="mini danger" data-del-client="${c.id}">Удалить</button></div></div></div>`).join(""):'<div class="empty">Клиентов пока нет. Добавь первых оптовиков выше.</div>';
+ document.querySelectorAll("[data-status]").forEach(el=>el.onchange=()=>{let c=state.clients.find(x=>x.id===el.dataset.status);if(c)c.status=el.value;save()});
+ document.querySelectorAll("[data-del-client]").forEach(el=>el.onclick=()=>{if(confirm("Удалить этого клиента?")){state.clients=state.clients.filter(c=>c.id!==el.dataset.delClient);save()}});
+ document.querySelectorAll("[data-contacted]").forEach(el=>el.onclick=()=>{const c=state.clients.find(x=>x.id===el.dataset.contacted);if(c){c.lastContact=today;c.nextContact="";if(c.status==="Новый")c.status="Контакт установлен";save()}});
+ document.querySelectorAll("[data-tomorrow]").forEach(el=>el.onclick=()=>{const c=state.clients.find(x=>x.id===el.dataset.tomorrow);if(c){const d=new Date();d.setDate(d.getDate()+1);c.nextContact=d.toISOString().slice(0,10);save()}});
+}
+function money(n){return '$'+(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function renderInventory(){
+ const items=state.inventory||[];
+ const rows=$('inventoryRows'); if(!rows)return;
+ rows.innerHTML=items.map((it,i)=>`<tr><td><b>${esc(it.model)}</b>${it.note?`<div class="muted">${esc(it.note)}</div>`:''}</td><td>${esc(it.imei||'—')}</td><td>${esc(it.condition||'—')}</td><td>${Number(it.qty)||0}</td><td>${money(it.cost)}</td><td><b>${money((Number(it.qty)||0)*(Number(it.cost)||0))}</b></td><td><button class="mini danger" data-inv-delete="${i}" type="button">Удалить</button></td></tr>`).join('');
+ const units=items.reduce((a,x)=>a+(Number(x.qty)||0),0), value=items.reduce((a,x)=>a+(Number(x.qty)||0)*(Number(x.cost)||0),0);
+ $('invCount').textContent=items.length;$('invUnits').textContent=units;$('invValue').textContent=money(value);$('inventoryEmpty').style.display=items.length?'none':'block';
+ document.querySelectorAll('[data-inv-delete]').forEach(b=>b.onclick=()=>{if(confirm('Удалить эту позицию со склада?')){state.inventory.splice(Number(b.dataset.invDelete),1);save();}});
+}
+function downloadFile(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function xmlEscape(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+$('addInventoryItem').onclick=()=>{const model=$('invModel').value.trim(),qty=Math.floor(Number($('invQty').value)),cost=Number($('invCost').value);if(!model){alert('Укажи модель / товар.');return}if(!Number.isFinite(qty)||qty<1){alert('Количество должно быть не меньше 1.');return}if(!Number.isFinite(cost)||cost<0){alert('Укажи корректную закупочную цену.');return}state.inventory.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),model,imei:$('invImei').value.trim(),qty,cost,condition:$('invCondition').value,note:$('invNote').value.trim(),createdAt:new Date().toISOString()});['invModel','invImei','invNote'].forEach(id=>$(id).value='');$('invQty').value='1';$('invCost').value='';save();alert('Позиция добавлена на склад.')};
+
+
+// Excel XLSX export — generated locally without external libraries.
+function xlsxEscape(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+function excelCol(n){let out='';while(n){let r=(n-1)%26;out=String.fromCharCode(65+r)+out;n=Math.floor((n-1)/26)}return out}
+function crc32(bytes){let c=-1;for(let i=0;i<bytes.length;i++){c^=bytes[i];for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xEDB88320:0)}return (c^(-1))>>>0}
+function zipStore(files){const enc=new TextEncoder(),local=[],central=[];let offset=0;const u16=(n)=>[n&255,(n>>>8)&255],u32=(n)=>[n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255];for(const f of files){const name=enc.encode(f.name),data=enc.encode(f.data),crc=crc32(data);const lh=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0),...name,...data]);local.push(lh);const ch=new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset),...name]);central.push(ch);offset+=lh.length}const centralSize=central.reduce((a,b)=>a+b.length,0),count=files.length;const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(count),...u16(count),...u32(centralSize),...u32(offset),...u16(0)]);const all=new Uint8Array(offset+centralSize+end.length);let pos=0;for(const a of local){all.set(a,pos);pos+=a.length}for(const a of central){all.set(a,pos);pos+=a.length}all.set(end,pos);return all}
+function buildInventoryXlsx(items){const headers=['Модель / товар','IMEI / серийный номер','Состояние','Количество','Закупочная цена за 1 шт. (USD)','Общая стоимость (USD)','Примечание'];const rows=[headers,...items.map(it=>[it.model||'',it.imei||'',it.condition||'',Number(it.qty)||0,Number(it.cost)||0,(Number(it.qty)||0)*(Number(it.cost)||0),it.note||''])];const sheetRows=rows.map((row,ri)=>'<row r="'+(ri+1)+'">'+row.map((v,ci)=>{const ref=excelCol(ci+1)+(ri+1);if(typeof v==='number')return '<c r="'+ref+'" t="n"><v>'+v+'</v></c>';return '<c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+xlsxEscape(v)+'</t></is></c>'}).join('')+'</row>').join('');const sheet='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="1" width="28" customWidth="1"/><col min="2" max="2" width="24" customWidth="1"/><col min="3" max="3" width="16" customWidth="1"/><col min="4" max="4" width="13" customWidth="1"/><col min="5" max="6" width="25" customWidth="1"/><col min="7" max="7" width="35" customWidth="1"/></cols><sheetData>'+sheetRows+'</sheetData><autoFilter ref="A1:G'+rows.length+'"/></worksheet>';const workbook='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Склад AIS" sheetId="1" r:id="rId1"/></sheets></workbook>';const files=[{name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'},{name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},{name:'xl/workbook.xml',data:workbook},{name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>'},{name:'xl/worksheets/sheet1.xml',data:sheet}];return zipStore(files)}
+$('exportInventoryExcel').onclick=()=>{const items=state.inventory||[];if(!items.length&&!confirm('Склад пуст. Скачать Excel-файл только с заголовками?'))return;const bytes=buildInventoryXlsx(items);const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='AIS-Store-inventory.xlsx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)};
+$('exportInventoryCsv').onclick=()=>{const items=state.inventory||[];const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv='Модель,IMEI,Состояние,Количество,Цена за штуку USD,Сумма USD,Примечание\r\n'+items.map(it=>[it.model,it.imei,it.condition,it.qty,it.cost,(Number(it.qty)||0)*(Number(it.cost)||0),it.note].map(q).join(',')).join('\r\n');downloadFile('ais-inventory.csv','\ufeff'+csv,'text/csv;charset=utf-8')};
+function activeOrders(){return (state.orders||[]).filter(o=>o.status!=="Отменён")}
+function renderFunnel(){
+ const s=state.sales||{}, clients=state.clients||[], orders=activeOrders();
+ const contacts=Math.max(0,Number(s.contacts)||0), offers=Math.max(0,Number(s.offers)||0);
+ const negotiations=clients.filter(c=>["Переговоры","Заказ","Активный"].includes(c.status)).length;
+ const orderCount=orders.length;
+ const rate=(a,b)=>b?Math.round(a/b*100):0;
+ const set=(id,v)=>{if($(id))$(id).textContent=v};
+ set("funnelContacts",contacts);set("funnelOffers",offers);set("funnelNegotiations",negotiations);set("funnelOrders",orderCount);
+ set("funnelOfferRate",rate(offers,contacts)+"%");set("funnelNegotiationRate",rate(negotiations,offers)+"%");set("funnelOrderRate",rate(orderCount,contacts)+"%");
+ if($("funnelProgress"))$("funnelProgress").style.width=Math.min(100,rate(orderCount,contacts))+"%";
+ const units=orders.reduce((n,o)=>n+(Number(o.units)||0),0);
+ set("funnelInsight",orderCount?`Зафиксировано ${orderCount} заказ(ов) на ${units} телефонов. Конверсия контакта в заказ — ${rate(orderCount,contacts)}%. Сравнивай недели при одинаковом способе учёта.`:"Заказов пока нет. Сохраняй каждый реальный заказ внизу; отменённые заказы не учитываются в конверсии.");
+}
+function renderOrders(){
+ const rows=$("orderRows"), empty=$("ordersEmpty");if(!rows)return;
+ const orders=(state.orders||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+ rows.innerHTML=orders.map(o=>`<tr><td>${esc(o.date||"")}</td><td>${esc(o.client||"")}</td><td>${Number(o.units)||0}</td><td>${Number(o.amount||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td>${esc(o.status||"")}</td><td><button class="mini danger" data-del-order="${esc(o.id)}" type="button">Удалить</button></td></tr>`).join("");
+ empty.classList.toggle("hidden",orders.length>0);
+ document.querySelectorAll("[data-del-order]").forEach(b=>b.onclick=()=>{if(confirm("Удалить эту запись заказа?")){state.orders=state.orders.filter(o=>o.id!==b.dataset.delOrder);save()}});
+ renderFunnel();
+}
+$("addOrder").onclick=()=>{const client=$("orderClient").value.trim(),units=Math.floor(Number($("orderUnits").value)),amount=$("orderAmount").value.trim()===""?0:Number($("orderAmount").value);if(!client){alert("Укажи клиента или магазин.");return}if(!Number.isFinite(units)||units<1){alert("Количество телефонов должно быть не меньше 1.");return}if(!Number.isFinite(amount)||amount<0){alert("Проверь сумму заказа.");return}state.orders.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),client,units,amount,status:$("orderStatus").value,date:$("orderDate").value||new Date().toISOString().slice(0,10),createdAt:new Date().toISOString()});$("orderClient").value="";$("orderUnits").value="1";$("orderAmount").value="";save();alert("Заказ сохранён.")};
+function renderSales(){
+ const s=state.sales;const map={sUnits:"units",sActive:"active",sMargin:"margin",sNew:"new",sContacts:"contacts",sOffers:"offers",sFollowups:"followups",sOrders:"orders"};
+ Object.entries(map).forEach(([id,k])=>{if($(id)&&document.activeElement!==$(id))$(id).value=s[k]});
+ $("kContacts").textContent=s.contacts;$("kOffers").textContent=s.offers;$("kOrders").textContent=(state.orders||[]).filter(o=>o.status!=="Отменён").length||s.orders;$("kNew").textContent=s.new;renderFunnel();
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));["home","tasks","clients","sales","finance"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab));});
+if($("addTask"))$("addTask").onclick=()=>{const title=$("newTask").value.trim();if(!title)return;const dueRaw=$("newTaskDue").value;state.tasks.push({title,note:$("newTaskNote").value.trim(),dueAt:dueRaw?new Date(dueRaw).toISOString():"",done:false});$("newTask").value="";$("newTaskNote").value="";$("newTaskDue").value="";save()};
+if($("resetTasks"))$("resetTasks").onclick=()=>{if(confirm("Снять все отметки выполнения?")){state.tasks.forEach(t=>t.done=false);save()}};
+if($("addClient"))$("addClient").onclick=()=>{const name=$("cName").value.trim();if(!name){alert("Укажи название магазина или имя клиента.");return}state.clients.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),name,region:$("cRegion").value.trim(),phone:$("cPhone").value.trim(),type:$("cType").value,order:Math.max(0,+$("cOrder").value||0),status:$("cStatus").value,nextContact:$("cNext").value,lastContact:$("cLast").value,notes:$("cNotes").value.trim()});["cName","cRegion","cPhone","cNext","cLast","cNotes"].forEach(id=>$(id).value="");save()};
+$("clientSearch").oninput=renderClients;$("clientFilter").onchange=renderClients;
+if($("saveSales"))$("saveSales").onclick=()=>{state.sales={units:+$("sUnits").value||0,active:+$("sActive").value||0,margin:+$("sMargin").value||0,new:+$("sNew").value||0,contacts:+$("sContacts").value||0,offers:+$("sOffers").value||0,followups:+$("sFollowups").value||0,orders:+$("sOrders").value||0};save();alert("KPI сохранены.")};
+function calcFinance(){const f={units:+$("fUnits").value||0,cost:+$("fCost").value||0,days:+$("fDays").value||0,credit:+$("fCredit").value||0,cash:+$("fCash").value||0};state.finance=f;const need=Math.max(0,f.units*f.cost*f.days/7-f.credit);$("capitalNeed").textContent="$"+Math.round(need).toLocaleString("en-US");$("capitalGap").textContent="$"+Math.round(Math.max(0,need-f.cash)).toLocaleString("en-US");localStorage.setItem("aisStoreMVP",JSON.stringify(state))}
+if($("calcFinance"))$("calcFinance").onclick=calcFinance;
+if($("exportBtn"))$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ais-store-backup.json";a.click();URL.revokeObjectURL(url)};
+// AIS Sales Manager 5.3: validated local backup / restore, preserving aisStoreMVP.
+function setBackupStatus(message){const el=$("backupStatus");if(el)el.textContent=message;}
+function makeBackupPayload(){return {app:"AIS Sales Manager",version:"5.3",schemaVersion:1,exportedAt:new Date().toISOString(),storageKey:"aisStoreMVP",data:state};}
+if($("backupExport"))$("backupExport").onclick=()=>{try{const payload=makeBackupPayload();const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ais-store-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);setBackupStatus("Резервная копия подготовлена. Сохрани файл в приложение «Файлы» и не удаляй его.");}catch(e){setBackupStatus("Не удалось создать копию: "+e.message);}};
+if($("backupImportBtn"))$("backupImportBtn").onclick=()=>$("backupImportFile").click();
+if($("backupImportFile"))$("backupImportFile").onchange=async ev=>{const file=ev.target.files&&ev.target.files[0];if(!file)return;try{if(file.size>10*1024*1024)throw new Error("Файл больше 10 МБ.");const parsed=JSON.parse(await file.text());const candidate=parsed&&parsed.data&&parsed.app==="AIS Sales Manager"?parsed.data:parsed;if(!candidate||typeof candidate!=="object"||Array.isArray(candidate))throw new Error("Формат JSON не распознан.");const required=["tasks","clients","orders","sales","finance","inventory"];for(const key of required){if(!(key in candidate))throw new Error("В файле отсутствует раздел: "+key);}
+if(!Array.isArray(candidate.tasks)||!Array.isArray(candidate.clients)||!Array.isArray(candidate.orders)||!Array.isArray(candidate.inventory)||!candidate.sales||typeof candidate.sales!=="object"||!candidate.finance||typeof candidate.finance!=="object")throw new Error("Структура резервной копии повреждена или несовместима.");
+if(!confirm("Восстановить данные из файла «"+file.name+"»? Текущие данные aisStoreMVP будут заменены. Сначала скачай текущую копию, если она нужна."))return;
+const previous=localStorage.getItem("aisStoreMVP");try{localStorage.setItem("aisStoreMVP",JSON.stringify(candidate));state=candidate;save();setBackupStatus("Восстановление завершено. Проверь клиентов, заказы и KPI.");alert("Данные восстановлены. Проверь основные разделы приложения.");}catch(writeErr){if(previous===null)localStorage.removeItem("aisStoreMVP");else localStorage.setItem("aisStoreMVP",previous);throw writeErr;}
+}catch(err){setBackupStatus("Импорт отменён: "+err.message);alert("Не удалось восстановить копию: "+err.message);}finally{ev.target.value="";}};
+
+function initFinance(){if(!$("fUnits"))return;const f=state.finance||defaultState.finance;Object.entries({fUnits:"units",fCost:"cost",fDays:"days",fCredit:"credit",fCash:"cash"}).forEach(([id,k])=>$(id).value=f[k]);calcFinance()}
+
+if($("startDayBtn"))$("startDayBtn").onclick=()=>{document.querySelector('[data-tab="tasks"]')?.click();$("coachFeedback").textContent="Рабочий день начат. Выполняй этапы последовательно.";};
+if($("showTasksBtn"))$("showTasksBtn").onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
+if($("completeStepBtn"))$("completeStepBtn").onclick=()=>{if(coachIndex<coachSteps.length-1){coachIndex++;localStorage.setItem("aisCoachStep",String(coachIndex));renderCoach();$("coachFeedback").textContent="Отлично! Прочитай следующий этап и выполни его.";}else{$("coachProgress").style.width="100%";$("coachFeedback").textContent="Рабочий день завершён. Запиши KPI и подготовь план на завтра.";localStorage.setItem("aisCoachStep","0");coachIndex=0;}};
+if($("notifyBtn"))$("notifyBtn").onclick=async()=>{if(!("Notification" in window)){alert("Этот браузер не поддерживает уведомления. Подсказки доступны внутри приложения.");return;}try{const permission=await Notification.requestPermission();if(permission==="granted"){new Notification("AIS.Store Manager",{body:"Напоминания разрешены. Открой приложение, чтобы посмотреть следующий шаг."});alert("Разрешение получено. Фоновые уведомления по расписанию в этой версии ещё не настроены.");}else{alert("Разрешение не предоставлено. Можно продолжать пользоваться подсказками внутри приложения.");}}catch(e){alert("Не удалось включить уведомления в этом режиме браузера.");}};
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-tab="${b.dataset.go}"]`)?.click()));
+$('dashStart').onclick=()=>$('dashTasks').click();
+$('dashTasks').onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
+$('dashClients').onclick=()=>document.querySelector('[data-tab="clients"]')?.click();
+if($("homeAiOpen"))$("homeAiOpen").onclick=()=>document.querySelector('[data-tab="tasks"]')?.click();
+renderHome();renderTasks();renderClients();renderSales();renderInventory();renderOrders();renderFunnel();initFinance();renderCoach();showDailyWelcome();
+
+</script>
+</body>
+</html>
