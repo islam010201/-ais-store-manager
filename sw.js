@@ -1,4 +1,4 @@
-const CACHE='ais-sales-manager-v5-1';
+const CACHE='ais-sales-manager-v5-3';
 const ASSETS=['./index.html','./manifest.webmanifest','./team-photo.jpg','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install',event=>{
